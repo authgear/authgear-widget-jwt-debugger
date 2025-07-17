@@ -238,10 +238,26 @@ body {
 
 .jwt-textarea {
   background: white;
-  color: transparent;
+  color: #495057;
   caret-color: #495057;
   flex: 1;
-  min-height: 0;
+  min-height: 120px;
+  padding: 12px 16px;
+  padding-right: 40px;
+  font-size: 14px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.4;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  resize: vertical;
+  width: 100%;
+}
+
+.jwt-textarea.jwt-transparent {
+  color: transparent;
+  caret-color: #495057;
 }
 
 .jwt-color-overlay {
@@ -260,22 +276,26 @@ body {
   line-height: 1.4;
   overflow: hidden;
   z-index: 1;
+  margin: 0;
+  border: none;
+  background: transparent;
 }
 
-.jwt-part {
-  font-weight: 500;
-}
+
 
 .jwt-header {
   color: #28a745;
+  font-weight: 500;
 }
 
 .jwt-payload {
   color: #495057;
+  font-weight: 500;
 }
 
 .jwt-signature {
   color: #6f42c1;
+  font-weight: 500;
 }
 
 .jwt-dot {
