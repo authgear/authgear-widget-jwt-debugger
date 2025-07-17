@@ -36,13 +36,13 @@ const JWTDebugger = () => {
     alg: 'Signature or encryption algorithm',
     typ: 'Token type',
     cty: 'Content Type',
-    sub: 'Subject - Identifies the user of this JWT',
-    iss: 'Issuer - Identifies of the issuer of the JWT',
-    aud: 'Audience - Identifies the recipients that the JWT is intended for',
-    exp: 'Expiration time - The expiration time on or after which the JWT MUST NOT be accepted for processing in NumericDate type, representing seconds',
-    nbf: 'Not Before - The time before which the JWT MUST NOT be accepted for processing in NumericDate type, representing seconds',
-    iat: 'Issued At - The time at which the JWT was issued in NumericDate type, representing seconds',
-    jti: 'JWT ID - A unique identifier for the JWT'
+    sub: 'Subject: Identifies the user of this JWT',
+    iss: 'Issuer: Identifies the issuer of the JWT',
+    aud: 'Audience: Identifies the recipients that the JWT is intended for',
+    exp: 'Expiration time: The expiration time on or after which the JWT MUST NOT be accepted for processing in NumericDate type, representing seconds',
+    nbf: 'Not Before: The time before which the JWT MUST NOT be accepted for processing in NumericDate type, representing seconds',
+    iat: 'Issued At: The time at which the JWT was issued in NumericDate type, representing seconds',
+    jti: 'JWT ID: A unique identifier for the JWT'
   };
 
   // Format timestamp to human readable date
@@ -231,21 +231,34 @@ const JWTDebugger = () => {
             const description = claimDescriptions[key];
             
             return (
-              <div key={index} className="json-line" style={{ position: 'relative' }}>
+              <div key={index} className="json-line">
                 <span className="json-indent">{line.match(/^(\s*)/)[1]}</span>
                 <span className="json-quote">"</span>
                 <span 
                   className="json-key"
                   style={{ 
                     cursor: description ? 'help' : 'default',
-                    textDecoration: description ? 'underline dotted' : 'none'
+                    textDecoration: description ? 'underline dotted' : 'none',
+                    position: 'relative'
                   }}
                 >
                   {key}
+                  {description && (
+                    <div className="claim-description" style={{ display: 'none' }}>
+                      {description}
+                    </div>
+                  )}
                 </span>
                 <span className="json-quote">"</span>
                 <span className="json-colon">: </span>
-                <span className="json-value">
+                <span 
+                  className="json-value"
+                  style={{ 
+                    position: 'relative',
+                    cursor: (key === 'iat' || key === 'exp' || key === 'nbf') && typeof obj[key] === 'number' ? 'help' : 'default',
+                    textDecoration: (key === 'iat' || key === 'exp' || key === 'nbf') && typeof obj[key] === 'number' ? 'underline dotted' : 'none'
+                  }}
+                >
                   {typeof obj[key] === 'string' ? (
                     <>
                       <span className="json-quote">"</span>
@@ -255,21 +268,13 @@ const JWTDebugger = () => {
                   ) : (
                     obj[key]
                   )}
+                  {(key === 'iat' || key === 'exp' || key === 'nbf') && typeof obj[key] === 'number' && (
+                    <div className="claim-description" style={{ display: 'none' }}>
+                      {formatTimestamp(obj[key])}
+                    </div>
+                  )}
                 </span>
                 {line.includes(',') && <span className="json-comma">,</span>}
-                {description && (
-                  <div className="claim-description" style={{ display: 'none' }}>
-                    {key === 'iat' && typeof obj[key] === 'number' ? (
-                      `Issued At: ${formatTimestamp(obj[key])}`
-                    ) : key === 'exp' && typeof obj[key] === 'number' ? (
-                      `Expiration: ${formatTimestamp(obj[key])}`
-                    ) : key === 'nbf' && typeof obj[key] === 'number' ? (
-                      `Not Before: ${formatTimestamp(obj[key])}`
-                    ) : (
-                      `${key}: ${description}`
-                    )}
-                  </div>
-                )}
               </div>
             );
           }

@@ -559,8 +559,10 @@ body {
 }
 
 /* Show claim description on hover */
-div[style*="position: relative"]:hover .claim-description,
-div[style*="position: relative"]:hover .claim-description[style*="display: none"] {
+.json-key:hover .claim-description,
+.json-key:hover .claim-description[style*="display: none"],
+.json-value:hover .claim-description,
+.json-value:hover .claim-description[style*="display: none"] {
   display: block !important;
 }
 
