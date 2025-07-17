@@ -131,8 +131,11 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  padding: 4px;
+  font-size: 11px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-weight: 500;
+  color: #6c757d;
+  padding: 4px 6px;
   border-radius: 4px;
   transition: all 0.2s;
   z-index: 10;
@@ -143,9 +146,12 @@ body {
   margin-left: 8px;
   background: #f8f9fa;
   border: 1px solid #ced4da;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 11px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-weight: 500;
+  color: #6c757d;
 }
 
 .copy-icon:hover {
@@ -529,6 +535,19 @@ body {
 
 .json-signature .json-value {
   color: #6f42c1;
+}
+
+.json-container {
+  position: relative;
+}
+
+.json-copy-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ced4da;
+  z-index: 10;
 }
 
 .json-content {

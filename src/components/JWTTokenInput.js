@@ -88,7 +88,7 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult, cop
             onClick={() => copyToClipboard(jwtToken, 'token')}
             title="Copy JWT Token"
           >
-            📋
+            COPY
           </button>
         </div>
       </div>

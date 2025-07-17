@@ -46,7 +46,7 @@ const SignatureVerification = ({
                       onClick={() => copyToClipboard(secret, 'secret')}
                       title="Copy Secret"
                     >
-                      📋
+                      COPY
                     </button>
                   </div>
                 </div>
