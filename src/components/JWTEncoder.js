@@ -116,6 +116,24 @@ const JWTEncoder = () => {
     algLabel = 'Private Key';
   }
 
+  // Validation for header and payload
+  let headerStatus = null;
+  if (header.trim().length === 0) {
+    headerStatus = null;
+  } else if (!headerError) {
+    headerStatus = <span className="status-indicator status-valid">✓ Valid header</span>;
+  } else {
+    headerStatus = <span className="status-indicator status-invalid">✗ Invalid header</span>;
+  }
+  let payloadStatus = null;
+  if (payload.trim().length === 0) {
+    payloadStatus = null;
+  } else if (!payloadError) {
+    payloadStatus = <span className="status-indicator status-valid">✓ Valid payload</span>;
+  } else {
+    payloadStatus = <span className="status-indicator status-invalid">✗ Invalid payload</span>;
+  }
+
   return (
     <div className="main-layout">
       <div className="left-column">
@@ -123,6 +141,7 @@ const JWTEncoder = () => {
           <div className="content-panel">
             <div className="input-header">
               <label className="form-label">Header</label>
+              {headerStatus}
             </div>
             <div className="panel-content">
               <div className="input-container" style={{ width: '100%' }}>
@@ -181,6 +200,7 @@ const JWTEncoder = () => {
           <div className="content-panel">
             <div className="input-header">
               <label className="form-label">Payload</label>
+              {payloadStatus}
             </div>
             <div className="panel-content">
               <div className="input-container" style={{ width: '100%' }}>
@@ -322,19 +342,42 @@ const JWTEncoder = () => {
         <div className="content-panel">
           <div className="input-header">
             <label className="form-label">JSON Web Token</label>
-            <button className={`copy-icon${copySuccess ? ' copied' : ''}`} onClick={handleCopy} disabled={!jwt} title="Copy JWT">
-              {copySuccess ? '✓' : 'COPY'}
-            </button>
           </div>
           <div className="panel-content" style={{ position: 'relative' }}>
-            <textarea
-              className="form-input jwt-token-display"
-              value={jwt}
-              readOnly
-              rows={10}
-              spellCheck={false}
-              style={{ background: '#f9f9f9', color: '#222', minHeight: 180 }}
-            />
+            <div className="input-container" style={{ position: 'relative' }}>
+              {jwt ? (
+                <div className="jwt-color-overlay" style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: 0, right: 0, minHeight: 180, padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8 }}>
+                  {(() => {
+                    const parts = jwt.split('.');
+                    return [
+                      <span key="header" style={{ color: '#28a745', fontWeight: 500 }}>{parts[0]}</span>,
+                      <span key="dot1" style={{ color: '#6c757d' }}>.</span>,
+                      <span key="payload" style={{ color: '#495057', fontWeight: 500 }}>{parts[1]}</span>,
+                      <span key="dot2" style={{ color: '#6c757d' }}>.</span>,
+                      <span key="signature" style={{ color: '#6f42c1', fontWeight: 500 }}>{parts[2]}</span>
+                    ];
+                  })()}
+                </div>
+              ) : (
+                <textarea
+                  className="form-input jwt-token-display"
+                  value={''}
+                  readOnly
+                  rows={10}
+                  spellCheck={false}
+                  style={{ background: '#f9f9f9', minHeight: 180 }}
+                />
+              )}
+              <button 
+                className="copy-icon"
+                onClick={handleCopy}
+                disabled={!jwt}
+                title="Copy JWT"
+                style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 2 }}
+              >
+                {copySuccess ? '✓' : 'COPY'}
+              </button>
+            </div>
             {!jwt && (
               <div style={{
                 position: 'absolute',
