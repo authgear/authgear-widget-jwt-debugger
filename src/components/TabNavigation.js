@@ -48,31 +48,33 @@ const TabNavigation = ({
           JWE Encrypt
         </button>
       </div>
-      <div className="example-section-header">
-        <label>JWT Example:</label>
-        <select
-          className="form-select"
-          value={selectedAlg}
-          onChange={(e) => {
-            setSelectedAlg(e.target.value);
-          }}
-        >
-          {SUPPORTED_ALGORITHMS.map(alg => (
-            <option key={alg.value} value={alg.value}>
-              {alg.label}
-            </option>
-          ))}
-        </select>
-        <button
-          className="btn btn-primary"
-          style={{ marginLeft: 8 }}
-          onClick={() => {
-            generateExample();
-          }}
-        >
-          Go
-        </button>
-      </div>
+      {activeTab !== 'jwe-encrypt' && (
+        <div className="example-section-header">
+          <label>JWT Example:</label>
+          <select
+            className="form-select"
+            value={selectedAlg}
+            onChange={(e) => {
+              setSelectedAlg(e.target.value);
+            }}
+          >
+            {SUPPORTED_ALGORITHMS.map(alg => (
+              <option key={alg.value} value={alg.value}>
+                {alg.label}
+              </option>
+            ))}
+          </select>
+          <button
+            className="btn btn-primary"
+            style={{ marginLeft: 8 }}
+            onClick={() => {
+              generateExample();
+            }}
+          >
+            Go
+          </button>
+        </div>
+      )}
     </div>
   );
 };

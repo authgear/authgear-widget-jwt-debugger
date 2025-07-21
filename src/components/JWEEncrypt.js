@@ -2,14 +2,50 @@ import React, { useState } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
-const JWEEncrypt = () => {
-  const [jwt, setJwt] = useState('');
+const JWEEncrypt = ({ initialJwt = '' }) => {
+  const [jwt, setJwt] = useState(initialJwt);
   const [publicKey, setPublicKey] = useState('');
   const [keyFormat, setKeyFormat] = useState('pem');
+  const [alg, setAlg] = useState('RSA-OAEP');
+  const [enc, setEnc] = useState('A256GCM');
   const [jwe, setJwe] = useState('');
   const [encrypting, setEncrypting] = useState(false);
   const [error, setError] = useState('');
   const [copied, copy] = useClipboard();
+
+  // Supported algorithms and encryption methods
+  const supportedAlgs = [
+    { value: 'RSA-OAEP', label: 'RSA-OAEP' },
+    { value: 'RSA-OAEP-256', label: 'RSA-OAEP-256' },
+    { value: 'RSA1_5', label: 'RSA1_5' },
+    { value: 'A128KW', label: 'A128KW' },
+    { value: 'A192KW', label: 'A192KW' },
+    { value: 'A256KW', label: 'A256KW' },
+    { value: 'dir', label: 'Direct' },
+    { value: 'ECDH-ES', label: 'ECDH-ES' },
+    { value: 'ECDH-ES+A128KW', label: 'ECDH-ES+A128KW' },
+    { value: 'ECDH-ES+A192KW', label: 'ECDH-ES+A192KW' },
+    { value: 'ECDH-ES+A256KW', label: 'ECDH-ES+A256KW' },
+    { value: 'PBES2-HS256+A128KW', label: 'PBES2-HS256+A128KW' },
+    { value: 'PBES2-HS384+A192KW', label: 'PBES2-HS384+A192KW' },
+    { value: 'PBES2-HS512+A256KW', label: 'PBES2-HS512+A256KW' }
+  ];
+
+  const supportedEnc = [
+    { value: 'A128CBC-HS256', label: 'A128CBC-HS256' },
+    { value: 'A192CBC-HS384', label: 'A192CBC-HS384' },
+    { value: 'A256CBC-HS512', label: 'A256CBC-HS512' },
+    { value: 'A128GCM', label: 'A128GCM' },
+    { value: 'A192GCM', label: 'A192GCM' },
+    { value: 'A256GCM', label: 'A256GCM' }
+  ];
+
+  // Update JWT when initialJwt prop changes
+  React.useEffect(() => {
+    if (initialJwt) {
+      setJwt(initialJwt);
+    }
+  }, [initialJwt]);
 
   const handleEncrypt = async () => {
     setError('');
@@ -18,12 +54,12 @@ const JWEEncrypt = () => {
     try {
       let importedKey;
       if (keyFormat === 'pem') {
-        importedKey = await jose.importSPKI(publicKey, 'RSA-OAEP');
+        importedKey = await jose.importSPKI(publicKey, alg);
       } else {
-        importedKey = await jose.importJWK(JSON.parse(publicKey), 'RSA-OAEP');
+        importedKey = await jose.importJWK(JSON.parse(publicKey), alg);
       }
       const jweResult = await new jose.CompactEncrypt(new TextEncoder().encode(jwt))
-        .setProtectedHeader({ alg: 'RSA-OAEP', enc: 'A256GCM' })
+        .setProtectedHeader({ alg, enc })
         .encrypt(importedKey);
       setJwe(jweResult);
     } catch (e) {
@@ -36,6 +72,7 @@ const JWEEncrypt = () => {
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 24 }}>
       <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24 }}>JWE Encrypt</h2>
+      
       <div className="content-panel" style={{ marginBottom: 32 }}>
         <div className="input-header">
           <label className="form-label">JWT Input</label>
@@ -51,6 +88,7 @@ const JWEEncrypt = () => {
           />
         </div>
       </div>
+
       <div className="content-panel" style={{ marginBottom: 32 }}>
         <div className="input-header">
           <label className="form-label">Public Key</label>
@@ -72,18 +110,73 @@ const JWEEncrypt = () => {
             <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <input type="radio" name="keyFormat" value="jwk" checked={keyFormat === 'jwk'} onChange={() => setKeyFormat('jwk')} /> JWK
             </label>
-            <button
-              className="btn btn-primary"
-              style={{ marginLeft: 16, minWidth: 100 }}
-              disabled={!jwt || !publicKey || encrypting}
-              onClick={handleEncrypt}
-            >
-              {encrypting ? 'Encrypting...' : 'Encrypt'}
-            </button>
           </div>
           {error && <div className="error-msg" style={{ marginTop: 8 }}>{error}</div>}
         </div>
       </div>
+
+      <div className="content-panel" style={{ marginBottom: 32 }}>
+        <div className="input-header">
+          <label className="form-label">Encryption Configuration</label>
+        </div>
+        <div className="panel-content">
+          <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end' }}>
+            <div style={{ flex: 1 }}>
+              <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>Algorithm (alg)</label>
+              <select
+                value={alg}
+                onChange={(e) => setAlg(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1.5px solid #ced4da',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  background: '#fff'
+                }}
+              >
+                {supportedAlgs.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div style={{ flex: 1 }}>
+              <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>Encryption Method (enc)</label>
+              <select
+                value={enc}
+                onChange={(e) => setEnc(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: '1.5px solid #ced4da',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  background: '#fff'
+                }}
+              >
+                {supportedEnc.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 16, textAlign: 'left' }}>
+          <button
+            className="btn btn-primary"
+            style={{ minWidth: 120, padding: '10px 20px', fontSize: 16 }}
+            disabled={!jwt || !publicKey || encrypting}
+            onClick={handleEncrypt}
+          >
+            {encrypting ? 'Encrypting...' : 'Encrypt'}
+          </button>
+        </div>
+      </div>
+
       <div className="content-panel">
         <div className="input-header">
           <label className="form-label">JWE Output</label>
@@ -97,7 +190,6 @@ const JWEEncrypt = () => {
             spellCheck={false}
             style={{ background: '#f9f9f9', minHeight: 100, width: '100%', boxSizing: 'border-box', position: 'relative', zIndex: 1 }}
           />
-          {/* Placeholder overlay inside textarea */}
           {!jwe && (
             <div style={{
               position: 'absolute',
@@ -113,7 +205,6 @@ const JWEEncrypt = () => {
               Encrypted JWE will appear here
             </div>
           )}
-          {/* Copy button in top right */}
           <button
             className="copy-icon"
             onClick={() => copy(jwe)}
@@ -123,7 +214,6 @@ const JWEEncrypt = () => {
           >
             {copied ? '✓' : 'COPY'}
           </button>
-          {/* Clear button below the textarea */}
           <button
             className="btn btn-secondary"
             onClick={() => setJwe('')}

@@ -21,6 +21,7 @@ const highlightWithPrism = (code) =>
   Prism.highlight(code, Prism.languages.json, 'json');
 
 const JWTEncoder = forwardRef((props, ref) => {
+  const { onEncryptToken } = props;
   const [header, setHeader] = useState(defaultHeader);
   const [payload, setPayload] = useState(defaultPayload);
   const [secretOrKey, setSecretOrKey] = useState('');
@@ -367,8 +368,8 @@ const JWTEncoder = forwardRef((props, ref) => {
             <div className="input-header">
               <label className="form-label">JSON Web Token</label>
             </div>
-            <div className="panel-content" style={{ position: 'relative', height: '100%' }}>
-              <div className="input-container" style={{ position: 'relative', height: '100%' }}>
+            <div className="panel-content" style={{ position: 'relative', height: 'auto' }}>
+              <div className="input-container" style={{ position: 'relative', minHeight: 180 }}>
                 {jwt ? (
                   <div className="jwt-color-overlay" style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, minHeight: 180, height: '100%', maxHeight: '100%', overflow: 'auto', padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8 }}>
                     {(() => {
@@ -415,6 +416,15 @@ const JWTEncoder = forwardRef((props, ref) => {
                 }}>
                   Generated JWT will appear here
                 </div>
+              )}
+              {jwt && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => onEncryptToken && onEncryptToken(jwt)}
+                  style={{ marginTop: 12, width: '100%', padding: '8px 16px', fontSize: 14 }}
+                >
+                  Encrypt this token
+                </button>
               )}
             </div>
           </div>

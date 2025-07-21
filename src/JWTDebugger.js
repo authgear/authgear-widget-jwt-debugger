@@ -57,6 +57,7 @@ const JWTDebugger = () => {
   const [selectedAlg, setSelectedAlg] = useState('HS256');
   const [showExampleDropdown, setShowExampleDropdown] = useState(false);
   const encoderRef = useRef();
+  const [jweEncryptJwt, setJweEncryptJwt] = useState('');
 
   const [copiedHeader, copyHeader] = useClipboard();
   const [copiedPayload, copyPayload] = useClipboard();
@@ -71,6 +72,12 @@ const JWTDebugger = () => {
 
   // Generate example JWT
   const generateExample = useExampleGenerator(selectedAlg, activeTab, encoderRef, setJwtToken, secretConfig.setValue, publicKeyConfig.setValue);
+
+  // Function to handle switching to JWE Encrypt tab with JWT
+  const switchToJweEncrypt = (jwt) => {
+    setJweEncryptJwt(jwt);
+    setActiveTab('jwe-encrypt');
+  };
 
   return (
     <div className="jwt-debugger">
@@ -117,10 +124,10 @@ const JWTDebugger = () => {
           </>
         </div>
         <div style={{ display: activeTab === 'encoder' ? 'block' : 'none' }}>
-          <JWTEncoder ref={encoderRef} />
+          <JWTEncoder ref={encoderRef} onEncryptToken={switchToJweEncrypt} />
         </div>
         <div style={{ display: activeTab === 'jwe-encrypt' ? 'block' : 'none' }}>
-          <JWEEncrypt />
+          <JWEEncrypt initialJwt={jweEncryptJwt} />
         </div>
       </div>
     </div>
