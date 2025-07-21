@@ -133,7 +133,6 @@ The widget supports all modern browsers:
 
 - **React 18.2.0** - UI framework
 - **jose 5.1.3** - JWT library for signature verification
-- **crypto-js 4.2.0** - Cryptographic functions for HMAC verification
 
 ## Project Structure
 

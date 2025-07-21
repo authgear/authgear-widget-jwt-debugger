@@ -51,11 +51,6 @@ const TabNavigation = ({
               value={selectedAlg}
               onChange={(e) => {
                 setSelectedAlg(e.target.value);
-                // Auto-generate example when algorithm changes
-                setTimeout(() => {
-                  generateExample();
-                  setShowExampleDropdown(false);
-                }, 100);
               }}
               autoFocus
             >
@@ -65,6 +60,16 @@ const TabNavigation = ({
                 </option>
               ))}
             </select>
+            <button
+              className="btn btn-primary"
+              style={{ marginLeft: 8 }}
+              onClick={() => {
+                generateExample();
+                setShowExampleDropdown(false);
+              }}
+            >
+              Go
+            </button>
           </>
         ) : (
           <button

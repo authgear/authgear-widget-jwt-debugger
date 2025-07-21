@@ -27,9 +27,23 @@ export const generateExampleJWT = async (selectedAlg) => {
         .setExpirationTime('1h')
         .sign(secret);
     } else if (selectedAlg.startsWith('RS')) {
-      // For demo purposes, we'll create a simple example
-      jwt = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
-      generatedSecret = 'RS256 example - requires actual private key for verification';
+      // For demo purposes, we'll create a simple example for each RS* alg
+      let algExample = '';
+      switch (selectedAlg) {
+        case 'RS256':
+          algExample = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
+          break;
+        case 'RS384':
+          algExample = 'eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
+          break;
+        case 'RS512':
+          algExample = 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
+          break;
+        default:
+          algExample = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
+      }
+      jwt = algExample;
+      generatedSecret = `${selectedAlg} example - requires actual private key for verification`;
     }
 
     return { jwt, generatedSecret };
