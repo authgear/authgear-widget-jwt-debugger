@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import * as jose from 'jose';
 import Editor from 'react-simple-code-editor';
 import Prism from 'prismjs';
@@ -18,7 +18,7 @@ const defaultPayload = `{
 const highlightWithPrism = (code) =>
   Prism.highlight(code, Prism.languages.json, 'json');
 
-const JWTEncoder = () => {
+const JWTEncoder = forwardRef((props, ref) => {
   const [header, setHeader] = useState(defaultHeader);
   const [payload, setPayload] = useState(defaultPayload);
   const [secretOrKey, setSecretOrKey] = useState('');
@@ -98,6 +98,21 @@ const JWTEncoder = () => {
     };
     encodeJWT();
   }, [header, payload, secretOrKey, encodingFormat, privateKeyFormat]);
+
+  useImperativeHandle(ref, () => ({
+    setExampleData: (header, payload, secret) => {
+      setHeader(header);
+      setPayload(payload);
+      setSecretOrKey(secret);
+      // If alg is RS*, set privateKeyFormat to 'pem'
+      try {
+        const alg = JSON.parse(header).alg;
+        if (alg && alg.startsWith('RS')) {
+          setPrivateKeyFormat('pem');
+        }
+      } catch {}
+    }
+  }));
 
   const handleCopy = () => {
     if (jwt) {
@@ -339,14 +354,14 @@ const JWTEncoder = () => {
         </div>
       </div>
       <div className="right-column">
-        <div className="content-panel">
+        <div className="content-panel" style={{ height: '100%' }}>
           <div className="input-header">
             <label className="form-label">JSON Web Token</label>
           </div>
-          <div className="panel-content" style={{ position: 'relative' }}>
-            <div className="input-container" style={{ position: 'relative' }}>
+          <div className="panel-content" style={{ position: 'relative', height: '100%' }}>
+            <div className="input-container" style={{ position: 'relative', height: '100%' }}>
               {jwt ? (
-                <div className="jwt-color-overlay" style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: 0, right: 0, minHeight: 180, padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8 }}>
+                <div className="jwt-color-overlay" style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, minHeight: 180, height: '100%', maxHeight: '100%', overflow: 'auto', padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8 }}>
                   {(() => {
                     const parts = jwt.split('.');
                     return [
@@ -365,7 +380,7 @@ const JWTEncoder = () => {
                   readOnly
                   rows={10}
                   spellCheck={false}
-                  style={{ background: '#f9f9f9', minHeight: 180 }}
+                  style={{ background: '#f9f9f9', minHeight: 180, height: '100%', maxHeight: '100%' }}
                 />
               )}
               <button 
@@ -397,6 +412,6 @@ const JWTEncoder = () => {
       </div>
     </div>
   );
-};
+});
 
 export default JWTEncoder; 

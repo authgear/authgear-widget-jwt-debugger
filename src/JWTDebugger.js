@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { decodeJWT } from './utils';
 import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
@@ -20,6 +20,7 @@ const JWTDebugger = () => {
   const [copiedHeader, setCopiedHeader] = useState(false);
   const [copiedPayload, setCopiedPayload] = useState(false);
   const [showExampleDropdown, setShowExampleDropdown] = useState(false);
+  const encoderRef = useRef();
 
   // Decode JWT token
   const decodedJWT = useMemo(() => {
@@ -34,13 +35,42 @@ const JWTDebugger = () => {
   // Generate example JWT
   const generateExample = useCallback(async () => {
     const { jwt, generatedSecret } = await generateExampleJWT(selectedAlg);
-    setJwtToken(jwt);
-    if (selectedAlg.startsWith('HS')) {
-      setSecret(generatedSecret);
-    } else {
-      setSecret('');
+    if (activeTab === 'decoder') {
+      setJwtToken(jwt);
+      if (selectedAlg.startsWith('HS')) {
+        setSecret(generatedSecret);
+      } else {
+        setSecret('');
+      }
+    } else if (activeTab === 'encoder' && encoderRef.current) {
+      let header = JSON.stringify({ alg: selectedAlg, typ: 'JWT' }, null, 2);
+      let payload = JSON.stringify({ sub: 'uid_12345', name: 'John Doe', iat: Math.floor(Date.now() / 1000), exp: Math.floor(Date.now() / 1000) + (60 * 60) }, null, 2);
+      let secret = '';
+      if (selectedAlg.startsWith('HS')) {
+        switch (selectedAlg) {
+          case 'HS256': secret = 'your-256-bit-secret'; break;
+          case 'HS384': secret = 'your-384-bit-secret'; break;
+          case 'HS512': secret = 'your-512-bit-secret'; break;
+          default: secret = 'your-secret';
+        }
+      } else if (selectedAlg.startsWith('RS')) {
+        // Generate a real RSA private key as PEM
+        const keyPair = await window.crypto.subtle.generateKey(
+          { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: { name: 'SHA-256' } },
+          true,
+          ['sign', 'verify']
+        );
+        const exported = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+        // Convert ArrayBuffer to PEM
+        const b64 = window.btoa(String.fromCharCode(...new Uint8Array(exported)));
+        const pem = '-----BEGIN PRIVATE KEY-----\n' + b64.match(/.{1,64}/g).join('\n') + '\n-----END PRIVATE KEY-----';
+        secret = pem;
+      } else {
+        secret = '';
+      }
+      encoderRef.current.setExampleData(header, payload, secret);
     }
-  }, [selectedAlg]);
+  }, [selectedAlg, activeTab]);
 
   // Copy to clipboard
   const copyToClipboard = async (text, type) => {
@@ -123,7 +153,7 @@ const JWTDebugger = () => {
           </>
         </div>
         <div style={{ display: activeTab === 'encoder' ? 'block' : 'none' }}>
-          <JWTEncoder />
+          <JWTEncoder ref={encoderRef} />
         </div>
       </div>
     </div>

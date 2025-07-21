@@ -43,42 +43,29 @@ const TabNavigation = ({
         </button>
       </div>
       <div className="example-section-header">
-        {showExampleDropdown ? (
-          <>
-            <label>JWT Example:</label>
-            <select
-              className="form-select"
-              value={selectedAlg}
-              onChange={(e) => {
-                setSelectedAlg(e.target.value);
-              }}
-              autoFocus
-            >
-              {SUPPORTED_ALGORITHMS.map(alg => (
-                <option key={alg.value} value={alg.value}>
-                  {alg.label}
-                </option>
-              ))}
-            </select>
-            <button
-              className="btn btn-primary"
-              style={{ marginLeft: 8 }}
-              onClick={() => {
-                generateExample();
-                setShowExampleDropdown(false);
-              }}
-            >
-              Go
-            </button>
-          </>
-        ) : (
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowExampleDropdown(true)}
-          >
-            Generate Example
-          </button>
-        )}
+        <label>JWT Example:</label>
+        <select
+          className="form-select"
+          value={selectedAlg}
+          onChange={(e) => {
+            setSelectedAlg(e.target.value);
+          }}
+        >
+          {SUPPORTED_ALGORITHMS.map(alg => (
+            <option key={alg.value} value={alg.value}>
+              {alg.label}
+            </option>
+          ))}
+        </select>
+        <button
+          className="btn btn-primary"
+          style={{ marginLeft: 8 }}
+          onClick={() => {
+            generateExample();
+          }}
+        >
+          Go
+        </button>
       </div>
     </div>
   );
