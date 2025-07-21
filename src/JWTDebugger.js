@@ -36,11 +36,25 @@ const JWTDebugger = () => {
   const generateExample = useCallback(async () => {
     const { jwt, generatedSecret } = await generateExampleJWT(selectedAlg);
     if (activeTab === 'decoder') {
-      setJwtToken(jwt);
-      if (selectedAlg.startsWith('HS')) {
-        setSecret(generatedSecret);
-      } else {
+      if (selectedAlg.startsWith('RS')) {
+        // Generate key pair, then pass to generateExampleJWT so JWT and public key match
+        const keyPair = await window.crypto.subtle.generateKey(
+          { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: { name: 'SHA-256' } },
+          true,
+          ['sign', 'verify']
+        );
+        const { jwt: realJwt, generatedPublicKey } = await generateExampleJWT(selectedAlg, keyPair);
+        setJwtToken(realJwt);
         setSecret('');
+        setPublicKey(generatedPublicKey);
+      } else {
+        setJwtToken(jwt);
+        if (selectedAlg.startsWith('HS')) {
+          setSecret(generatedSecret);
+        } else {
+          setSecret('');
+          setPublicKey('');
+        }
       }
     } else if (activeTab === 'encoder' && encoderRef.current) {
       let header = JSON.stringify({ alg: selectedAlg, typ: 'JWT' }, null, 2);

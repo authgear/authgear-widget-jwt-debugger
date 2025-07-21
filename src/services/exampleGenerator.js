@@ -1,7 +1,14 @@
 import * as jose from 'jose';
 
+// Helper to convert ArrayBuffer to PEM
+function arrayBufferToPem(buffer, type) {
+  const b64 = window.btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  const lines = b64.match(/.{1,64}/g).join('\n');
+  return `-----BEGIN ${type} KEY-----\n${lines}\n-----END ${type} KEY-----`;
+}
+
 // Generate example JWT
-export const generateExampleJWT = async (selectedAlg) => {
+export const generateExampleJWT = async (selectedAlg, keyPairArg) => {
   try {
     const header = {
       alg: selectedAlg,
@@ -17,6 +24,9 @@ export const generateExampleJWT = async (selectedAlg) => {
 
     let jwt;
     let generatedSecret = '';
+    let generatedPublicKey = '';
+    let generatedPrivateKey = '';
+    let keyPair = keyPairArg;
     
     if (selectedAlg.startsWith('HS')) {
       switch (selectedAlg) {
@@ -39,28 +49,31 @@ export const generateExampleJWT = async (selectedAlg) => {
         .setExpirationTime('1h')
         .sign(secret);
     } else if (selectedAlg.startsWith('RS')) {
-      // For demo purposes, we'll create a simple example for each RS* alg
-      let algExample = '';
-      switch (selectedAlg) {
-        case 'RS256':
-          algExample = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
-          break;
-        case 'RS384':
-          algExample = 'eyJhbGciOiJSUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
-          break;
-        case 'RS512':
-          algExample = 'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
-          break;
-        default:
-          algExample = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1aWRfMTIzNDUiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE3MzU2MTM0M30.example-signature-would-be-here';
+      // Use provided keyPair or generate a new one
+      if (!keyPair) {
+        keyPair = await window.crypto.subtle.generateKey(
+          { name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: { name: 'SHA-256' } },
+          true,
+          ['sign', 'verify']
+        );
       }
-      jwt = algExample;
-      generatedSecret = `${selectedAlg} example - requires actual private key for verification`;
+      const privateKeyPEM = arrayBufferToPem(await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey), 'PRIVATE');
+      const privateKey = await jose.importPKCS8(privateKeyPEM, selectedAlg);
+      jwt = await new jose.SignJWT(payload)
+        .setProtectedHeader(header)
+        .setIssuedAt()
+        .setExpirationTime('1h')
+        .sign(privateKey);
+      // Export keys as PEM
+      const exportedPriv = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
+      const exportedPub = await window.crypto.subtle.exportKey('spki', keyPair.publicKey);
+      generatedPrivateKey = arrayBufferToPem(exportedPriv, 'PRIVATE');
+      generatedPublicKey = arrayBufferToPem(exportedPub, 'PUBLIC');
     }
 
-    return { jwt, generatedSecret };
+    return { jwt, generatedSecret, generatedPrivateKey, generatedPublicKey, keyPair };
   } catch (error) {
     console.error('Error generating example:', error);
-    return { jwt: '', generatedSecret: '' };
+    return { jwt: '', generatedSecret: '', generatedPrivateKey: '', generatedPublicKey: '', keyPair: null };
   }
 }; 
