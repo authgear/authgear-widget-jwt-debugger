@@ -1,6 +1,10 @@
 import React from 'react';
+import { useClipboard } from '../utils';
+import { getErrorMessage } from '../utils/errorHandling';
 
-const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult, copyToClipboard }) => {
+const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) => {
+  const [copied, copy] = useClipboard();
+  
   // Function to determine if text should be colored
   const shouldColorText = () => {
     if (!jwtToken || !jwtToken.trim()) return false;
@@ -47,7 +51,7 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult, cop
                 ) : (
                   <span className="status-indicator status-invalid">
                     ✗ Signature Invalid
-                    {signatureResult.error && `: ${signatureResult.error}`}
+                    {signatureResult.error && `: ${getErrorMessage(signatureResult.error)}`}
                   </span>
                 )
               )}
@@ -55,7 +59,7 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult, cop
           )}
           {decodedJWT && decodedJWT.error && (
             <span className="status-indicator status-invalid">
-              ✗ {decodedJWT.error}
+              ✗ {getErrorMessage(decodedJWT.error)}
             </span>
           )}
         </div>
@@ -84,11 +88,11 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult, cop
             )}
           </div>
           <button 
-            className="copy-icon"
-            onClick={() => copyToClipboard(jwtToken, 'token')}
+            className={`copy-icon${copied ? ' copied' : ''}`}
+            onClick={() => copy(jwtToken)}
             title="Copy JWT Token"
           >
-            COPY
+            {copied ? '✓' : 'COPY'}
           </button>
         </div>
       </div>

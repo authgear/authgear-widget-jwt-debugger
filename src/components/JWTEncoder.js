@@ -4,6 +4,8 @@ import Editor from 'react-simple-code-editor';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism.css';
+import { useClipboard } from '../utils';
+import { createValidationError, ERROR_MESSAGES } from '../utils/errorHandling';
 
 const defaultHeader = `{
   "typ": "JWT",
@@ -26,9 +28,9 @@ const JWTEncoder = forwardRef((props, ref) => {
   const [headerError, setHeaderError] = useState('');
   const [payloadError, setPayloadError] = useState('');
   const [secretError, setSecretError] = useState('');
-  const [copySuccess, setCopySuccess] = useState(false);
   const [encodingFormat, setEncodingFormat] = useState('utf8');
   const [privateKeyFormat, setPrivateKeyFormat] = useState('pem');
+  const [copied, copy] = useClipboard();
 
   useEffect(() => {
     const encodeJWT = async () => {
@@ -36,26 +38,31 @@ const JWTEncoder = forwardRef((props, ref) => {
       setPayloadError('');
       setSecretError('');
       setJwt('');
+      
       let headerObj, payloadObj;
+      
       try {
         headerObj = JSON.parse(header);
       } catch (e) {
-        setHeaderError('Invalid JSON');
+        setHeaderError(ERROR_MESSAGES.INVALID_JSON);
         return;
       }
+      
       try {
         payloadObj = JSON.parse(payload);
       } catch (e) {
-        setPayloadError('Invalid JSON');
+        setPayloadError(ERROR_MESSAGES.INVALID_JSON);
         return;
       }
+      
       if (!headerObj.alg) {
-        setHeaderError('Missing "alg" in header');
+        setHeaderError(ERROR_MESSAGES.MISSING_ALGORITHM);
         return;
       }
+      
       if (headerObj.alg.startsWith('HS')) {
         if (!secretOrKey) {
-          setSecretError('Secret required for HMAC');
+          setSecretError(ERROR_MESSAGES.SECRET_REQUIRED);
           return;
         }
         try {
@@ -70,11 +77,11 @@ const JWTEncoder = forwardRef((props, ref) => {
             .sign(secretBytes);
           setJwt(jwt);
         } catch (e) {
-          setSecretError('Encoding failed: ' + e.message);
+          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${e.message}`);
         }
       } else if (headerObj.alg.startsWith('RS') || headerObj.alg.startsWith('ES')) {
         if (!secretOrKey) {
-          setSecretError('Private key required');
+          setSecretError(ERROR_MESSAGES.PRIVATE_KEY_REQUIRED);
           return;
         }
         try {
@@ -90,10 +97,10 @@ const JWTEncoder = forwardRef((props, ref) => {
             .sign(privateKey);
           setJwt(jwt);
         } catch (e) {
-          setSecretError('Encoding failed: ' + e.message);
+          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${e.message}`);
         }
       } else {
-        setHeaderError('Unsupported alg');
+        setHeaderError(ERROR_MESSAGES.UNSUPPORTED_ALGORITHM);
       }
     };
     encodeJWT();
@@ -113,14 +120,6 @@ const JWTEncoder = forwardRef((props, ref) => {
       } catch {}
     }
   }));
-
-  const handleCopy = () => {
-    if (jwt) {
-      navigator.clipboard.writeText(jwt);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    }
-  };
 
   let algLabel = 'Secret';
   let parsedAlg = 'HS256';
@@ -385,12 +384,12 @@ const JWTEncoder = forwardRef((props, ref) => {
               )}
               <button 
                 className="copy-icon"
-                onClick={handleCopy}
+                onClick={() => copy(jwt)}
                 disabled={!jwt}
                 title="Copy JWT"
                 style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 2 }}
               >
-                {copySuccess ? '✓' : 'COPY'}
+                {copied ? '✓' : 'COPY'}
               </button>
             </div>
             {!jwt && (
@@ -404,7 +403,7 @@ const JWTEncoder = forwardRef((props, ref) => {
                 pointerEvents: 'none',
                 userSelect: 'none',
               }}>
-                {'{header}.{payload}.{signature}'}
+                Generated JWT will appear here
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import * as jose from 'jose';
+import { createSignatureError, ERROR_MESSAGES, handleAsyncOperation } from '../utils/errorHandling';
 
 // Utility: base64url encode ArrayBuffer
 function base64urlEncode(buffer) {
@@ -13,50 +14,34 @@ function base64urlEncode(buffer) {
     .replace(/=+$/, '');
 }
 
-// Utility: base64url decode to Uint8Array
-function base64urlDecode(str) {
-  // Pad string to multiple of 4
-  str = str.replace(/-/g, '+').replace(/_/g, '/');
-  while (str.length % 4) {
-    str += '=';
-  }
-  const binary = atob(str);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
-
-// Utility: encode string to Uint8Array (UTF-8)
+// Utility: UTF-8 encode string
 function utf8Encode(str) {
   return new TextEncoder().encode(str);
 }
 
-// Utility: get key bytes from secret and encoding
-function getSecretBytes(secret, encoding) {
-  if (encoding === 'base64url') {
-    return base64urlDecode(secret);
-  } else {
-    return utf8Encode(secret);
+// Get HMAC algorithm from algorithm string
+function getHmacAlgorithm(algorithm) {
+  switch (algorithm) {
+    case 'HS256': return { name: 'HMAC', hash: { name: 'SHA-256' } };
+    case 'HS384': return { name: 'HMAC', hash: { name: 'SHA-384' } };
+    case 'HS512': return { name: 'HMAC', hash: { name: 'SHA-512' } };
+    default: throw new Error('Unsupported algorithm');
   }
 }
 
-// Utility: get Web Crypto algorithm name
-function getHmacAlgorithm(alg) {
-  switch (alg) {
-    case 'HS256': return { name: 'HMAC', hash: 'SHA-256' };
-    case 'HS384': return { name: 'HMAC', hash: 'SHA-384' };
-    case 'HS512': return { name: 'HMAC', hash: 'SHA-512' };
-    default: throw new Error('Unsupported algorithm');
+// Get secret bytes based on encoding
+function getSecretBytes(secret, encoding) {
+  if (encoding === 'base64url') {
+    return Uint8Array.from(atob(secret.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
   }
+  return new TextEncoder().encode(secret);
 }
 
 // Verify JWT signature
 export const verifyJWTSignature = async (decodedJWT, jwtToken, secret, publicKey, jwkEndpoint, secretEncoding, keyType) => {
   if (!decodedJWT || decodedJWT.error) return null;
 
-  try {
+  return await handleAsyncOperation(async () => {
     const algorithm = decodedJWT.header.alg;
     
     if (algorithm.startsWith('HS')) {
@@ -65,10 +50,8 @@ export const verifyJWTSignature = async (decodedJWT, jwtToken, secret, publicKey
       return await verifyAsymmetricSignature(decodedJWT, jwtToken, publicKey, jwkEndpoint, keyType, algorithm);
     }
 
-    return { error: 'Unsupported algorithm' };
-  } catch (error) {
-    return { error: error.message };
-  }
+    return createSignatureError(ERROR_MESSAGES.UNSUPPORTED_ALGORITHM);
+  }, 'SIGNATURE_VERIFICATION', ERROR_MESSAGES.ENCODING_FAILED);
 };
 
 // Verify symmetric signature (HS256, HS384, HS512)
@@ -121,11 +104,7 @@ const verifyAsymmetricSignature = async (decodedJWT, jwtToken, publicKey, jwkEnd
       try {
         jwk = JSON.parse(jwkEndpoint);
       } catch (e) {
-        return {
-          valid: false,
-          algorithm: algorithm,
-          error: 'Invalid JWK JSON'
-        };
+        return createSignatureError(ERROR_MESSAGES.INVALID_JWK_JSON);
       }
       key = await jose.importJWK(jwk, algorithm);
     }
@@ -137,10 +116,6 @@ const verifyAsymmetricSignature = async (decodedJWT, jwtToken, publicKey, jwkEnd
       payload
     };
   } catch (error) {
-    return {
-      valid: false,
-      algorithm: algorithm,
-      error: error.message
-    };
+    return createSignatureError(error.message, error);
   }
 }; 

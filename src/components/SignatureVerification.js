@@ -1,30 +1,18 @@
 import React from 'react';
 
 const SignatureVerification = ({ 
-  decodedJWT, 
-  secret, 
-  setSecret, 
-  publicKey, 
-  setPublicKey, 
-  jwkEndpoint, 
-  setJwkEndpoint, 
-  secretEncoding, 
-  setSecretEncoding, 
-  keyType, 
-  setKeyType, 
-  copyToClipboard,
-  selectedAlg // <-- add this prop
+  algorithm,
+  secretConfig,
+  publicKeyConfig
 }) => {
-  // Determine which algorithm to show
-  let alg = selectedAlg || 'HS256';
-  if (decodedJWT && decodedJWT.header && decodedJWT.header.alg) {
-    alg = decodedJWT.header.alg;
-  }
+  const { value: secret, setValue: setSecret, encoding: secretEncoding, setEncoding: setSecretEncoding } = secretConfig;
+  const { value: publicKey, setValue: setPublicKey, jwkValue: jwkEndpoint, setJwkValue: setJwkEndpoint, type: keyType, setType: setKeyType } = publicKeyConfig;
+
   return (
     <div className="content-panel" style={{ marginTop: '24px' }}>
       <div className="input-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <label className="form-label">
-          JWT Signature Verification: {alg.startsWith('HS') ? 'Secret' : 'Public Key'}
+          JWT Signature Verification: {algorithm.startsWith('HS') ? 'Secret' : 'Public Key'}
         </label>
         {secret && (
           <span className="status-indicator status-valid">
@@ -34,7 +22,7 @@ const SignatureVerification = ({
       </div>
       <div className="panel-content">
         <>
-          {alg.startsWith('HS') && (
+          {algorithm.startsWith('HS') && (
             <>
               <div className="form-group">
                 <div className="input-container">
@@ -49,7 +37,7 @@ const SignatureVerification = ({
                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                     <label className="form-label" style={{ marginRight: 8, marginBottom: 0 }}>Algorithm:</label>
-                    <span style={{ fontWeight: 'bold', marginRight: 16 }}>{alg}</span>
+                    <span style={{ fontWeight: 'bold', marginRight: 16 }}>{algorithm}</span>
                   </div>
                   <div className="form-group-inline" style={{ display: 'flex', alignItems: 'flex-end', marginTop: 0 }}>
                     <label className="form-label" style={{ marginRight: 8, marginBottom: 0 }}>Encoding Format</label>
@@ -83,7 +71,7 @@ const SignatureVerification = ({
             </>
           )}
 
-          {(alg.startsWith('RS') || alg.startsWith('ES')) && (
+          {(algorithm.startsWith('RS') || algorithm.startsWith('ES')) && (
             <>
               {keyType === 'pem' && (
                 <div className="form-group" style={{ marginBottom: 0 }}>
@@ -112,7 +100,7 @@ const SignatureVerification = ({
               <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-end' }}>
                   <label className="form-label" style={{ marginRight: 8, marginBottom: 0 }}>Algorithm:</label>
-                  <span style={{ fontWeight: 'bold', marginRight: 16 }}>{alg}</span>
+                  <span style={{ fontWeight: 'bold', marginRight: 16 }}>{algorithm}</span>
                 </div>
                 <div className="form-group-inline" style={{ display: 'flex', alignItems: 'flex-end', marginTop: 0 }}>
                   <label className="form-label" style={{ marginRight: 8, marginBottom: 0 }}>Key Type</label>

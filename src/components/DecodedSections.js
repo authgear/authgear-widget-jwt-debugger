@@ -1,7 +1,7 @@
 import React from 'react';
 import JSONRenderer from './JSONRenderer';
 
-const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyToClipboard }) => {
+const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, copyPayload }) => {
   const renderJSON = (obj, type) => {
     return <JSONRenderer obj={obj} type={type} />;
   };
@@ -18,7 +18,7 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyToClipbo
               <>
                 <button 
                   className={`copy-icon json-copy-icon ${copiedHeader ? 'copied' : ''}`}
-                  onClick={() => decodedJWT && !decodedJWT.error && copyToClipboard(JSON.stringify(decodedJWT.header, null, 2), 'header')}
+                  onClick={() => decodedJWT && !decodedJWT.error && copyHeader(JSON.stringify(decodedJWT.header, null, 2))}
                   title="Copy Decoded Header"
                   disabled={!decodedJWT || decodedJWT.error}
                 >
@@ -45,7 +45,7 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyToClipbo
               <>
                 <button 
                   className={`copy-icon json-copy-icon ${copiedPayload ? 'copied' : ''}`}
-                  onClick={() => decodedJWT && !decodedJWT.error && copyToClipboard(JSON.stringify(decodedJWT.payload, null, 2), 'payload')}
+                  onClick={() => decodedJWT && !decodedJWT.error && copyPayload(JSON.stringify(decodedJWT.payload, null, 2))}
                   title="Copy Decoded Payload"
                   disabled={!decodedJWT || decodedJWT.error}
                 >
