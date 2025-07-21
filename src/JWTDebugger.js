@@ -9,6 +9,7 @@ import JWTTokenInput from './components/JWTTokenInput';
 import DecodedSections from './components/DecodedSections';
 import SignatureVerification from './components/SignatureVerification';
 import JWTEncoder from './components/JWTEncoder';
+import JWEEncrypt from './components/JWEEncrypt';
 import { useSignatureVerification } from './hooks/useSignatureVerification';
 
 // Custom hook for example generation
@@ -117,6 +118,9 @@ const JWTDebugger = () => {
         </div>
         <div style={{ display: activeTab === 'encoder' ? 'block' : 'none' }}>
           <JWTEncoder ref={encoderRef} />
+        </div>
+        <div style={{ display: activeTab === 'jwe-encrypt' ? 'block' : 'none' }}>
+          <JWEEncrypt />
         </div>
       </div>
     </div>

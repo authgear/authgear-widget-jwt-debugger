@@ -41,6 +41,12 @@ const TabNavigation = ({
         >
           JWT Encoder
         </button>
+        <button
+          className={`tab ${activeTab === 'jwe-encrypt' ? 'active' : ''}`}
+          onClick={() => setActiveTab('jwe-encrypt')}
+        >
+          JWE Encrypt
+        </button>
       </div>
       <div className="example-section-header">
         <label>JWT Example:</label>

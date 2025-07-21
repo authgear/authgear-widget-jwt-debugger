@@ -3,6 +3,7 @@ import { CLAIM_DESCRIPTIONS, TIMESTAMP_CLAIMS } from '../constants';
 import { formatTimestamp, isTimestampClaim } from '../utils';
 
 const JSONRenderer = ({ obj, type }) => {
+  if (!obj) obj = {};
   const jsonString = JSON.stringify(obj, null, 2);
   const lines = jsonString.split('\n');
   
