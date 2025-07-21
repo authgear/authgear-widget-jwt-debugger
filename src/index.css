@@ -688,6 +688,36 @@ body {
   border-color: #545b62;
 }
 
+.input-section {
+  margin-bottom: 24px;
+}
+.input-section label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #bdbdbd;
+}
+.input-error {
+  border: 1px solid #e74c3c !important;
+}
+.error-msg {
+  color: #e74c3c;
+  font-size: 0.95em;
+  margin-top: 2px;
+}
+.jwt-output {
+  width: 100%;
+  min-height: 180px;
+  background: #f9f9f9;
+  color: #222;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  padding: 12px;
+  resize: none;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 10px;

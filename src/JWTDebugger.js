@@ -6,6 +6,7 @@ import TabNavigation from './components/TabNavigation';
 import JWTTokenInput from './components/JWTTokenInput';
 import DecodedSections from './components/DecodedSections';
 import SignatureVerification from './components/SignatureVerification';
+import JWTEncoder from './components/JWTEncoder';
 
 const JWTDebugger = () => {
   const [activeTab, setActiveTab] = useState('decoder');
@@ -81,7 +82,7 @@ const JWTDebugger = () => {
       />
 
       <div className="tab-content">
-        {activeTab === 'decoder' && (
+        <div style={{ display: activeTab === 'decoder' ? 'block' : 'none' }}>
           <>
             <div className="main-layout">
               <div className="left-column">
@@ -120,14 +121,10 @@ const JWTDebugger = () => {
               selectedAlg={selectedAlg}
             />
           </>
-        )}
-
-        {activeTab === 'encoder' && (
-          <div style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
-            <h3>JWT Encoder</h3>
-            <p>JWT encoding functionality coming soon...</p>
-          </div>
-        )}
+        </div>
+        <div style={{ display: activeTab === 'encoder' ? 'block' : 'none' }}>
+          <JWTEncoder />
+        </div>
       </div>
     </div>
   );
