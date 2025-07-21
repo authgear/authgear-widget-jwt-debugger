@@ -116,9 +116,17 @@ const verifyAsymmetricSignature = async (decodedJWT, jwtToken, publicKey, jwkEnd
     if (keyType === 'pem') {
       key = await jose.importSPKI(publicKey, algorithm);
     } else {
-      // For JWK, we'd need to fetch from endpoint
-      const response = await fetch(jwkEndpoint);
-      const jwk = await response.json();
+      // Parse JWK JSON from textarea
+      let jwk;
+      try {
+        jwk = JSON.parse(jwkEndpoint);
+      } catch (e) {
+        return {
+          valid: false,
+          algorithm: algorithm,
+          error: 'Invalid JWK JSON'
+        };
+      }
       key = await jose.importJWK(jwk, algorithm);
     }
 

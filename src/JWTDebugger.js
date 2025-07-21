@@ -34,7 +34,11 @@ const JWTDebugger = () => {
   const generateExample = useCallback(async () => {
     const { jwt, generatedSecret } = await generateExampleJWT(selectedAlg);
     setJwtToken(jwt);
-    setSecret(generatedSecret);
+    if (selectedAlg.startsWith('HS')) {
+      setSecret(generatedSecret);
+    } else {
+      setSecret('');
+    }
   }, [selectedAlg]);
 
   // Copy to clipboard
@@ -113,6 +117,7 @@ const JWTDebugger = () => {
               keyType={keyType}
               setKeyType={setKeyType}
               copyToClipboard={copyToClipboard}
+              selectedAlg={selectedAlg}
             />
           </>
         )}

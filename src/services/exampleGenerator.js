@@ -19,7 +19,19 @@ export const generateExampleJWT = async (selectedAlg) => {
     let generatedSecret = '';
     
     if (selectedAlg.startsWith('HS')) {
-      generatedSecret = 'your-256-bit-secret';
+      switch (selectedAlg) {
+        case 'HS256':
+          generatedSecret = 'your-256-bit-secret';
+          break;
+        case 'HS384':
+          generatedSecret = 'your-384-bit-secret';
+          break;
+        case 'HS512':
+          generatedSecret = 'your-512-bit-secret';
+          break;
+        default:
+          generatedSecret = 'your-secret';
+      }
       const secret = new TextEncoder().encode(generatedSecret);
       jwt = await new jose.SignJWT(payload)
         .setProtectedHeader(header)
