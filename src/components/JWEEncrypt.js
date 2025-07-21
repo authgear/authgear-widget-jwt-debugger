@@ -105,10 +105,10 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
             <span style={{ fontWeight: 500, marginRight: 8 }}>Key Format</span>
             <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <input type="radio" name="keyFormat" value="pem" checked={keyFormat === 'pem'} onChange={() => setKeyFormat('pem')} /> PEM
+              <input type="radio" name="jweEncryptKeyFormat" value="pem" checked={keyFormat === 'pem'} onChange={() => setKeyFormat('pem')} /> PEM
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <input type="radio" name="keyFormat" value="jwk" checked={keyFormat === 'jwk'} onChange={() => setKeyFormat('jwk')} /> JWK
+              <input type="radio" name="jweEncryptKeyFormat" value="jwk" checked={keyFormat === 'jwk'} onChange={() => setKeyFormat('jwk')} /> JWK
             </label>
           </div>
           {error && <div className="error-msg" style={{ marginTop: 8 }}>{error}</div>}

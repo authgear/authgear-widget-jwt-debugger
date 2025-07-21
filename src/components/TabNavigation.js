@@ -47,8 +47,14 @@ const TabNavigation = ({
         >
           JWE Encrypt
         </button>
+        <button
+          className={`tab ${activeTab === 'jwe-decrypt' ? 'active' : ''}`}
+          onClick={() => setActiveTab('jwe-decrypt')}
+        >
+          JWE Decrypt
+        </button>
       </div>
-      {activeTab !== 'jwe-encrypt' && (
+      {activeTab !== 'jwe-encrypt' && activeTab !== 'jwe-decrypt' && (
         <div className="example-section-header">
           <label>JWT Example:</label>
           <select
