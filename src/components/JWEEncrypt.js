@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
@@ -11,6 +11,7 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
   const [jwe, setJwe] = useState('');
   const [encrypting, setEncrypting] = useState(false);
   const [error, setError] = useState('');
+  const [compatError, setCompatError] = useState('');
   const [copied, copy] = useClipboard();
 
   // Supported algorithms and encryption methods
@@ -41,11 +42,34 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
   ];
 
   // Update JWT when initialJwt prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (initialJwt) {
       setJwt(initialJwt);
     }
   }, [initialJwt]);
+
+  // Real-time compatibility check for publicKey and alg
+  useEffect(() => {
+    if (!publicKey) {
+      setCompatError('');
+      return;
+    }
+    // Only check if publicKey is present
+    const checkCompatibility = async () => {
+      try {
+        // Try to import the key with the selected alg
+        if (keyFormat === 'pem') {
+          await jose.importSPKI(publicKey, alg);
+        } else {
+          await jose.importJWK(JSON.parse(publicKey), alg);
+        }
+        setCompatError('');
+      } catch (e) {
+        setCompatError('Selected algorithm is incompatible with the provided public key.');
+      }
+    };
+    checkCompatibility();
+  }, [publicKey, alg, keyFormat]);
 
   const handleEncrypt = async () => {
     setError('');
@@ -111,6 +135,9 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
               <input type="radio" name="jweEncryptKeyFormat" value="jwk" checked={keyFormat === 'jwk'} onChange={() => setKeyFormat('jwk')} /> JWK
             </label>
           </div>
+          {compatError && (
+            <div className="error-msg" style={{ marginTop: 8, color: '#e74c3c' }}>{compatError}</div>
+          )}
           {error && <div className="error-msg" style={{ marginTop: 8 }}>{error}</div>}
         </div>
       </div>
@@ -122,7 +149,36 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
         <div className="panel-content">
           <div style={{ display: 'flex', gap: 24, alignItems: 'flex-end' }}>
             <div style={{ flex: 1 }}>
-              <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>Algorithm (alg)</label>
+              <label className="form-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+                Algorithm (alg)
+                <span style={{ position: 'relative', display: 'inline-block' }}>
+                  <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer', verticalAlign: 'middle' }}>
+                    <circle cx="10" cy="10" r="9" stroke="#007bff" strokeWidth="1.5" fill="#fff"/>
+                    <text x="10" y="15" textAnchor="middle" fontSize="12" fill="#007bff" fontFamily="Arial" fontWeight="bold">i</text>
+                  </svg>
+                  <span style={{
+                    visibility: 'hidden',
+                    opacity: 0,
+                    width: 220,
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    textAlign: 'left',
+                    borderRadius: 6,
+                    padding: '8px 12px',
+                    position: 'absolute',
+                    zIndex: 10,
+                    bottom: '120%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: 12,
+                    transition: 'opacity 0.2s',
+                    pointerEvents: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                  }} className="alg-tooltip">
+                    The algorithm used to encrypt the Content Encryption Key (CEK).
+                  </span>
+                </span>
+              </label>
               <select
                 value={alg}
                 onChange={(e) => setAlg(e.target.value)}
@@ -143,7 +199,36 @@ const JWEEncrypt = ({ initialJwt = '' }) => {
               </select>
             </div>
             <div style={{ flex: 1 }}>
-              <label className="form-label" style={{ marginBottom: 8, display: 'block' }}>Encryption Method (enc)</label>
+              <label className="form-label" style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+                Encryption Method (enc)
+                <span style={{ position: 'relative', display: 'inline-block' }}>
+                  <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ cursor: 'pointer', verticalAlign: 'middle' }}>
+                    <circle cx="10" cy="10" r="9" stroke="#007bff" strokeWidth="1.5" fill="#fff"/>
+                    <text x="10" y="15" textAnchor="middle" fontSize="12" fill="#007bff" fontFamily="Arial" fontWeight="bold">i</text>
+                  </svg>
+                  <span style={{
+                    visibility: 'hidden',
+                    opacity: 0,
+                    width: 220,
+                    backgroundColor: '#222',
+                    color: '#fff',
+                    textAlign: 'left',
+                    borderRadius: 6,
+                    padding: '8px 12px',
+                    position: 'absolute',
+                    zIndex: 10,
+                    bottom: '120%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: 12,
+                    transition: 'opacity 0.2s',
+                    pointerEvents: 'none',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                  }} className="enc-tooltip">
+                    The algorithm used to encrypt the actual JWT payload.
+                  </span>
+                </span>
+              </label>
               <select
                 value={enc}
                 onChange={(e) => setEnc(e.target.value)}

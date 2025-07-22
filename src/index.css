@@ -718,6 +718,21 @@ body {
   resize: none;
 }
 
+.alg-tooltip, .enc-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.form-label span:hover .alg-tooltip,
+.form-label span:focus .alg-tooltip,
+.form-label span:hover .enc-tooltip,
+.form-label span:focus .enc-tooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
 @media (max-width: 768px) {
   body {
     padding: 10px;
