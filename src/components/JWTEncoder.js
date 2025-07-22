@@ -6,6 +6,7 @@ import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism.css';
 import { useClipboard } from '../utils';
 import { createValidationError, ERROR_MESSAGES } from '../utils/errorHandling';
+import TimeConversionModal from './TimeConversionModal';
 
 const defaultHeader = `{
   "typ": "JWT",
@@ -40,6 +41,9 @@ const JWTEncoder = forwardRef((props, ref) => {
   const [jwe, setJwe] = useState('');
   const [copiedJwe, copyJwe] = useClipboard();
   const [encrypting, setEncrypting] = useState(false);
+
+  // Time conversion modal state
+  const [showTimeModal, setShowTimeModal] = useState(false);
 
   useEffect(() => {
     const encodeJWT = async () => {
@@ -129,6 +133,25 @@ const JWTEncoder = forwardRef((props, ref) => {
       } catch {}
     }
   }));
+
+  // Handle inserting NumericDate into payload
+  const handleInsertNumericDate = (numericDate) => {
+    try {
+      // Try to parse the current payload as JSON
+      let payloadObj = {};
+      if (payload.trim()) {
+        payloadObj = JSON.parse(payload);
+      }
+      
+      // Add the NumericDate to the payload
+      payloadObj.iat = parseInt(numericDate, 10);
+      
+      // Update the payload with the new value
+      setPayload(JSON.stringify(payloadObj, null, 2));
+    } catch (error) {
+      console.error('Error inserting NumericDate into payload:', error);
+    }
+  };
 
   let algLabel = 'Secret';
   let parsedAlg = 'HS256';
@@ -277,6 +300,33 @@ const JWTEncoder = forwardRef((props, ref) => {
                 </div>
                 {payloadError && payload.trim() && <div className="error-msg">{payloadError}</div>}
               </div>
+            </div>
+            <div style={{ marginTop: '8px' }}>
+              <button
+                onClick={() => setShowTimeModal(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#007bff',
+                  textDecoration: 'underline',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  padding: 0,
+                  margin: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontWeight: 400
+                }}
+                title="Convert between datetime and NumericDate for JWT payload"
+              >
+                <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline', verticalAlign: 'middle' }}>
+                  <rect x="3" y="7" width="10" height="10" rx="2" stroke="#007bff" strokeWidth="1.5"/>
+                  <path d="M9 7V3H17V11H13" stroke="#007bff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M17 3L9 11" stroke="#007bff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Time Conversion
+              </button>
             </div>
           </div>
           <div style={{ marginTop: 8 }}>
@@ -430,6 +480,12 @@ const JWTEncoder = forwardRef((props, ref) => {
           </div>
         </div>
       </div>
+
+      {/* Time Conversion Modal */}
+      <TimeConversionModal
+        isOpen={showTimeModal}
+        onClose={() => setShowTimeModal(false)}
+      />
     </div>
   );
 });
