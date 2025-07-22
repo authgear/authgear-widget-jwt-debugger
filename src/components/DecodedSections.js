@@ -46,7 +46,7 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, 
             style={{
               background: 'none',
               border: 'none',
-              color: '#007bff',
+              color: '#0B63E9',
               textDecoration: 'underline',
               fontSize: '12px',
               cursor: 'pointer',
@@ -60,9 +60,9 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, 
             title="Open time conversion modal"
           >
             <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'inline', verticalAlign: 'middle' }}>
-              <rect x="3" y="7" width="10" height="10" rx="2" stroke="#007bff" strokeWidth="1.5"/>
-              <path d="M9 7V3H17V11H13" stroke="#007bff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M17 3L9 11" stroke="#007bff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <rect x="3" y="7" width="10" height="10" rx="2" stroke="#0B63E9" strokeWidth="1.5"/>
+              <path d="M9 7V3H17V11H13" stroke="#0B63E9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M17 3L9 11" stroke="#0B63E9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Time Conversion
           </button>

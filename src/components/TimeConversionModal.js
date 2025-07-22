@@ -159,7 +159,7 @@ const TimeConversionModal = ({ isOpen, onClose }) => {
                 onClick={convertDatetimeToNumeric}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
+                  backgroundColor: '#0B63E9',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
@@ -187,7 +187,7 @@ const TimeConversionModal = ({ isOpen, onClose }) => {
                   onClick={handleCopy}
                   style={{
                     padding: '4px 10px',
-                    backgroundColor: copied ? '#28a745' : '#007bff',
+                    backgroundColor: copied ? '#28a745' : '#0B63E9',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
@@ -226,7 +226,7 @@ const TimeConversionModal = ({ isOpen, onClose }) => {
                 onClick={convertNumericToDatetime}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
+                  backgroundColor: '#0B63E9',
                   color: 'white',
                   border: 'none',
                   borderRadius: '6px',
