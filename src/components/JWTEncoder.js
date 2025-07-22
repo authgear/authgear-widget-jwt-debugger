@@ -419,9 +419,9 @@ const JWTEncoder = forwardRef((props, ref) => {
               <label className="form-label">JSON Web Token</label>
             </div>
             <div className="panel-content" style={{ position: 'relative', height: 'auto' }}>
-              <div className="input-container" style={{ position: 'relative', minHeight: 180 }}>
+              <div className="input-container" style={{ position: 'relative', minHeight: 180, maxHeight: 240, overflowY: 'auto' }}>
                 {jwt ? (
-                  <div className="jwt-color-overlay" style={{ pointerEvents: 'none', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, minHeight: 180, height: '100%', maxHeight: '100%', overflow: 'auto', padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8 }}>
+                  <pre className="jwt-color-overlay" style={{ minHeight: 180, maxHeight: 240, overflowY: 'auto', padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8, boxSizing: 'border-box', margin: 0 }}>
                     {(() => {
                       const parts = jwt.split('.');
                       return [
@@ -432,7 +432,7 @@ const JWTEncoder = forwardRef((props, ref) => {
                         <span key="signature" style={{ color: '#6f42c1', fontWeight: 500 }}>{parts[2]}</span>
                       ];
                     })()}
-                  </div>
+                  </pre>
                 ) : (
                   <textarea
                     className="form-input jwt-token-display"
@@ -440,7 +440,7 @@ const JWTEncoder = forwardRef((props, ref) => {
                     readOnly
                     rows={10}
                     spellCheck={false}
-                    style={{ background: '#f9f9f9', minHeight: 180, height: '100%', maxHeight: '100%' }}
+                    style={{ background: '#f9f9f9', minHeight: 180, height: '100%', width: '100%', resize: 'vertical', overflowY: 'auto' }}
                   />
                 )}
                 <button 

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { decodeJWT, useClipboard } from './utils';
 import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
@@ -62,6 +62,26 @@ const JWTDebugger = () => {
 
   const [copiedHeader, copyHeader] = useClipboard();
   const [copiedPayload, copyPayload] = useClipboard();
+
+  // On mount, set default HS256 JWT for both decoder and encoder
+  useEffect(() => {
+    async function setDefaults() {
+      // Set decoder default
+      const { jwt, generatedSecret } = await generateExampleJWT('HS256');
+      setJwtToken(jwt);
+      // Set encoder default
+      if (encoderRef.current) {
+        const { header, payload, secret } = getDefaultJWTExampleData('HS256');
+        encoderRef.current.setExampleData(
+          JSON.stringify(header, null, 2),
+          JSON.stringify(payload, null, 2),
+          secret
+        );
+      }
+    }
+    setDefaults();
+    // eslint-disable-next-line
+  }, []);
 
   // Decode JWT token
   const decodedJWT = useMemo(() => {
