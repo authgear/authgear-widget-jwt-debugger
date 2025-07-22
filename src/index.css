@@ -71,9 +71,9 @@ body {
 }
 
 .tab.active {
-  color: #007bff;
+  color: #0B63E9;
   background-color: white;
-  border-bottom: 2px solid #007bff;
+  border-bottom: 2px solid #0B63E9;
 }
 
 .tab:hover {
@@ -225,8 +225,8 @@ body {
 }
 
 .jwt-token-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #0B63E9;
+  box-shadow: 0 0 0 3px rgba(11, 99, 233, 0.1);
 }
 
 .jwt-token-input:empty:before {
@@ -324,8 +324,8 @@ body {
 
 .form-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #0B63E9;
+  box-shadow: 0 0 0 3px rgba(11, 99, 233, 0.1);
 }
 
 .form-select {
@@ -339,8 +339,8 @@ body {
 
 .form-select:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #0B63E9;
+  box-shadow: 0 0 0 3px rgba(11, 99, 233, 0.1);
 }
 
 .main-layout {
@@ -567,12 +567,12 @@ body {
   margin-top: 8px;
   padding: 8px 12px;
   background-color: #f0f8ff;
-  border: 2px solid #007bff;
+  border: 2px solid #0B63E9;
   border-radius: 6px;
   font-size: 13px;
-  color: #007bff;
+  color: #0B63E9;
   font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(11, 99, 233, 0.15);
   white-space: normal;
   max-width: 350px;
   min-width: 200px;
@@ -591,7 +591,7 @@ body {
   height: 0;
   border-left: 8px solid transparent;
   border-right: 8px solid transparent;
-  border-bottom: 8px solid #007bff;
+  border-bottom: 8px solid #0B63E9;
 }
 
 .claim-description::after {
@@ -665,9 +665,9 @@ body {
 
 .btn {
   padding: 8px 16px;
-  border: 1px solid #007bff;
+  border: 1px solid #0B63E9;
   border-radius: 6px;
-  background-color: #007bff;
+  background-color: #0B63E9;
   color: white;
   cursor: pointer;
   font-size: 14px;
@@ -675,8 +675,8 @@ body {
 }
 
 .btn:hover {
-  background-color: #0056b3;
-  border-color: #0056b3;
+  background-color: #0849b7;
+  border-color: #0849b7;
 }
 
 .btn-secondary {

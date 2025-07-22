@@ -419,10 +419,10 @@ const JWTEncoder = forwardRef((props, ref) => {
               <label className="form-label">JSON Web Token</label>
             </div>
             <div className="panel-content" style={{ position: 'relative', height: 'auto' }}>
-              <div className="input-container" style={{ position: 'relative', minHeight: 180, maxHeight: 240, overflowY: 'auto' }}>
+              <div className="input-container" style={{ position: 'relative', minHeight: 360, maxHeight: 480, overflowY: 'auto' }}>
                 {jwt ? (
-                  <div style={{ maxHeight: 240, overflowY: 'auto', width: '100%' }}>
-                    <pre className="jwt-color-overlay" style={{ padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8, boxSizing: 'border-box', margin: 0 }}>
+                  <div style={{ maxHeight: 480, overflowY: 'auto', width: '100%' }}>
+                    <pre className="jwt-color-overlay" style={{ padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8, boxSizing: 'border-box', margin: 0, minHeight: 360, maxHeight: 480 }}>
                       {(() => {
                         const parts = jwt.split('.');
                         return [
