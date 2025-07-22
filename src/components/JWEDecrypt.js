@@ -77,7 +77,7 @@ const JWEDecrypt = () => {
         </div>
       </div>
 
-      <div className="content-panel" style={{ marginBottom: 32 }}>
+      <div className="content-panel" style={{ marginBottom: 0 }}>
         <div className="panel-content">
           <button
             className="btn btn-primary"

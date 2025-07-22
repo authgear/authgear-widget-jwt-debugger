@@ -779,4 +779,20 @@ body {
     white-space: nowrap;
     min-width: 0;
   }
+  .main-columns {
+    flex-direction: column !important;
+  }
+  .main-columns .left-column {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .main-columns .right-column {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-top: 24px !important;
+    order: 2 !important;
+  }
+  .main-columns .left-column {
+    order: 1 !important;
+  }
 } 

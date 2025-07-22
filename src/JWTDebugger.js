@@ -114,6 +114,61 @@ const JWTDebugger = () => {
 
       <div className="tab-content">
         <div style={{ display: activeTab === 'decoder' ? 'block' : 'none' }}>
+          {/* JWT Example dropdown for Decoder at the top, styled small and left-aligned */}
+          <div className="example-section-header" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginTop: 0, marginBottom: 16, padding: 0 }}>
+            <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWT Example:</label>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <select
+                className="form-select"
+                value={selectedAlg}
+                onChange={(e) => {
+                  setSelectedAlg(e.target.value);
+                }}
+                style={{
+                  fontSize: '12px',
+                  padding: '2px 18px 2px 6px',
+                  border: '1px solid #ced4da',
+                  borderRight: 'none',
+                  borderRadius: '4px 0 0 4px',
+                  background: '#fff',
+                  color: '#333',
+                  minWidth: 0,
+                  width: 'auto',
+                  fontWeight: 400,
+                  outline: 'none',
+                  height: 24
+                }}
+              >
+                {require('./constants').SUPPORTED_ALGORITHMS.map(alg => (
+                  <option key={alg.value} value={alg.value}>
+                    {alg.label}
+                  </option>
+                ))}
+              </select>
+              <div style={{ width: 1, height: 18, background: '#ced4da', margin: 0 }} />
+              <button
+                className="btn btn-secondary"
+                style={{
+                  background: '#fff',
+                  color: '#333',
+                  border: '1px solid #ced4da',
+                  borderRadius: '0 4px 4px 0',
+                  borderLeft: 'none',
+                  fontSize: '12px',
+                  padding: '4px 14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  margin: 0,
+                  height: 24
+                }}
+                onClick={() => {
+                  generateExample();
+                }}
+              >
+                Insert
+              </button>
+            </div>
+          </div>
           <>
             <div className="main-layout">
               <div className="left-column">
@@ -145,6 +200,61 @@ const JWTDebugger = () => {
           </>
         </div>
         <div style={{ display: activeTab === 'encoder' ? 'block' : 'none' }}>
+          {/* JWT Example dropdown for Encoder at the top, styled small and left-aligned */}
+          <div className="example-section-header" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginTop: 0, marginBottom: 16, padding: 0 }}>
+            <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWT Example:</label>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <select
+                className="form-select"
+                value={selectedAlg}
+                onChange={(e) => {
+                  setSelectedAlg(e.target.value);
+                }}
+                style={{
+                  fontSize: '12px',
+                  padding: '2px 18px 2px 6px',
+                  border: '1px solid #ced4da',
+                  borderRight: 'none',
+                  borderRadius: '4px 0 0 4px',
+                  background: '#fff',
+                  color: '#333',
+                  minWidth: 0,
+                  width: 'auto',
+                  fontWeight: 400,
+                  outline: 'none',
+                  height: 24
+                }}
+              >
+                {require('./constants').SUPPORTED_ALGORITHMS.map(alg => (
+                  <option key={alg.value} value={alg.value}>
+                    {alg.label}
+                  </option>
+                ))}
+              </select>
+              <div style={{ width: 1, height: 18, background: '#ced4da', margin: 0 }} />
+              <button
+                className="btn btn-secondary"
+                style={{
+                  background: '#fff',
+                  color: '#333',
+                  border: '1px solid #ced4da',
+                  borderRadius: '0 4px 4px 0',
+                  borderLeft: 'none',
+                  fontSize: '12px',
+                  padding: '4px 14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  margin: 0,
+                  height: 24
+                }}
+                onClick={() => {
+                  generateExample();
+                }}
+              >
+                Insert
+              </button>
+            </div>
+          </div>
           <JWTEncoder ref={encoderRef} onEncryptToken={switchToJweEncrypt} />
         </div>
         <div style={{ display: activeTab === 'jwe-encrypt' ? 'block' : 'none' }}>
