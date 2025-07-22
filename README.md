@@ -1,6 +1,8 @@
 # JWT Debugger Widget for Authgear
 
-A comprehensive React-based JWT debugging tool designed to be embedded in authgear.com via iframe. This widget provides full JWT decoding, validation, and signature verification capabilities.
+A comprehensive React-based JWT debugging tool designed to be embedded in authgear.com via iframe. This widget provides full JWT decoding, validation, signature verification, and JWE encryption/decryption capabilities.
+
+> **Built using [Cursor AI](https://cursor.sh/)**
 
 ## Features
 
@@ -8,6 +10,22 @@ A comprehensive React-based JWT debugging tool designed to be embedded in authge
 - ✅ Decode JWT tokens and display header and payload in JSON format
 - ✅ Validate JWT format and structure
 - ✅ Real-time validation feedback with visual indicators
+- ✅ Syntax highlighting for JSON output
+- ✅ Copy decoded header and payload to clipboard
+
+### JWT Encoding
+- ✅ Create new JWT tokens with custom header and payload
+- ✅ Support for all standard JWT algorithms (HS256, HS384, HS512, RS256, RS384, RS512)
+- ✅ Real-time token generation with live preview
+- ✅ Custom claims support
+
+### JWE (JSON Web Encryption) Support
+- ✅ **JWE Encryption**: Encrypt data using various algorithms
+  - Content encryption: A128GCM, A192GCM, A256GCM, A128CBC-HS256, A192CBC-HS384, A256CBC-HS512
+  - Key encryption: RSA-OAEP, RSA-OAEP-256, RSA1_5, A128KW, A192KW, A256KW, dir
+- ✅ **JWE Decryption**: Decrypt JWE tokens
+  - Support for all standard JWE algorithms
+  - Automatic algorithm detection
 
 ### Signature Verification
 - ✅ **Symmetric algorithms** (HS256, HS384, HS512)
@@ -34,18 +52,20 @@ The widget displays descriptions for all standard JWT claims:
 - `jti`: JWT ID - A unique identifier for the JWT
 
 ### Additional Features
-- ✅ Copy decoded header and payload to clipboard
 - ✅ Generate example JWTs with different algorithms
+- ✅ Time conversion utilities for Unix timestamps
 - ✅ Responsive design for mobile and desktop
 - ✅ Modern, clean UI with intuitive tabs
 - ✅ Human-readable timestamp formatting for date claims
+- ✅ Error handling with user-friendly messages
+- ✅ Custom React hooks for signature verification
 
 ## Installation
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd authgear-jwt-debugger-widget
+cd authgear-widget-jwt-debugger
 ```
 
 2. Install dependencies:
@@ -114,6 +134,12 @@ Secret for verification: `your-256-bit-secret`
 4. For JWK: enter the JWK endpoint URL
 5. The widget will verify the signature using the provided key
 
+### JWE Encryption/Decryption
+
+1. **Encryption**: Enter plaintext data, select encryption algorithms, and provide encryption key
+2. **Decryption**: Paste a JWE token and provide the decryption key
+3. The widget supports both symmetric and asymmetric key encryption
+
 ## Browser Support
 
 The widget supports all modern browsers:
@@ -132,20 +158,42 @@ The widget supports all modern browsers:
 ## Dependencies
 
 - **React 18.2.0** - UI framework
-- **jose 5.1.3** - JWT library for signature verification
+- **jose 5.1.3** - JWT/JWE library for signature verification and encryption
+- **prismjs 1.30.0** - Syntax highlighting for JSON output
+- **react-simple-code-editor 0.14.1** - Code editor component
 
 ## Project Structure
 
 ```
 src/
-├── index.js          # React entry point
-├── index.css         # Global styles
-└── JWTDebugger.js    # Main widget component
+├── index.js                    # React entry point
+├── index.css                   # Global styles
+├── JWTDebugger.js             # Main widget component
+├── constants.js               # Application constants
+├── utils.js                   # Utility functions
+├── components/                # React components
+│   ├── DecodedSections.js     # JWT header/payload display
+│   ├── JWTEncoder.js          # JWT creation interface
+│   ├── JWTTokenInput.js       # Token input component
+│   ├── SignatureVerification.js # Signature verification UI
+│   ├── JWEEncrypt.js          # JWE encryption interface
+│   ├── JWEDecrypt.js          # JWE decryption interface
+│   ├── JSONRenderer.js        # JSON syntax highlighting
+│   ├── TabNavigation.js       # Tab navigation component
+│   └── TimeConversionModal.js # Timestamp conversion utility
+├── services/                  # Business logic services
+│   ├── exampleGenerator.js    # Example JWT generation
+│   ├── jwtVerification.js     # JWT verification logic
+│   └── keyUtils.js           # Key handling utilities
+├── hooks/                     # Custom React hooks
+│   └── useSignatureVerification.js
+└── utils/                     # Utility modules
+    └── errorHandling.js       # Error handling utilities
 
 public/
-└── index.html        # HTML template
+└── index.html                # HTML template
 
-iframe-example.html   # Example iframe integration
+iframe-example.html           # Example iframe integration
 ```
 
 ## Contributing
