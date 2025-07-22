@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useClipboard } from '../utils';
 import { getErrorMessage } from '../utils/errorHandling';
 
@@ -33,6 +33,21 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
     return '';
   };
 
+  const textareaRef = useRef(null);
+  const overlayRef = useRef(null);
+
+  // Sync overlay scroll with textarea scroll
+  const handleScroll = () => {
+    if (overlayRef.current && textareaRef.current) {
+      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  };
+
+  useEffect(() => {
+    // Sync on mount and when token changes
+    handleScroll();
+  }, [jwtToken]);
+
   return (
     <div className="content-panel">
       <div className="input-header">
@@ -66,19 +81,36 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
       </div>
       <div className="panel-content">
         <div className="input-container">
-          <div className="jwt-input-wrapper">
-            <textarea
-              className={`form-input jwt-textarea ${shouldColorText() ? 'jwt-transparent' : ''}`}
-              placeholder="Paste a JSON web token here"
-              value={jwtToken}
-              onChange={(e) => setJwtToken(e.target.value)}
-              rows={6}
-            />
+          <div className="jwt-input-wrapper" style={{ maxHeight: 240, position: 'relative' }}>
             {shouldColorText() && (
-              <div className="jwt-color-overlay">
+              <div
+                className="jwt-color-overlay"
+                ref={overlayRef}
+                style={{
+                  pointerEvents: 'none',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  overflow: 'hidden',
+                  padding: '12px 16px',
+                  paddingRight: 40,
+                  fontSize: 14,
+                  fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-all',
+                  lineHeight: 1.4,
+                  zIndex: 1,
+                  margin: 0,
+                  border: 'none',
+                  background: 'transparent',
+                  maxHeight: 240,
+                }}
+              >
                 {jwtToken.split('').map((char, index) => (
-                  <span 
-                    key={index} 
+                  <span
+                    key={index}
                     className={getColorClass(char, index, jwtToken)}
                   >
                     {char}
@@ -86,6 +118,26 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
                 ))}
               </div>
             )}
+            <textarea
+              ref={textareaRef}
+              className={`form-input jwt-textarea ${shouldColorText() ? 'jwt-transparent' : ''}`}
+              placeholder="Paste a JSON web token here"
+              value={jwtToken}
+              onChange={(e) => setJwtToken(e.target.value)}
+              rows={6}
+              style={{
+                position: 'relative',
+                background: 'transparent',
+                overflow: 'auto',
+                resize: 'none',
+                width: '100%',
+                minHeight: 120,
+                maxHeight: 240,
+                boxSizing: 'border-box',
+                zIndex: 2,
+              }}
+              onScroll={handleScroll}
+            />
           </div>
           <button 
             className={`copy-icon${copied ? ' copied' : ''}`}
@@ -100,4 +152,4 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
   );
 };
 
-export default JWTTokenInput; 
+export default JWTTokenInput;

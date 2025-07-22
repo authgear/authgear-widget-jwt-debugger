@@ -421,18 +421,20 @@ const JWTEncoder = forwardRef((props, ref) => {
             <div className="panel-content" style={{ position: 'relative', height: 'auto' }}>
               <div className="input-container" style={{ position: 'relative', minHeight: 180, maxHeight: 240, overflowY: 'auto' }}>
                 {jwt ? (
-                  <pre className="jwt-color-overlay" style={{ minHeight: 180, maxHeight: 240, overflowY: 'auto', padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8, boxSizing: 'border-box', margin: 0 }}>
-                    {(() => {
-                      const parts = jwt.split('.');
-                      return [
-                        <span key="header" style={{ color: '#28a745', fontWeight: 500 }}>{parts[0]}</span>,
-                        <span key="dot1" style={{ color: '#6c757d' }}>.</span>,
-                        <span key="payload" style={{ color: '#495057', fontWeight: 500 }}>{parts[1]}</span>,
-                        <span key="dot2" style={{ color: '#6c757d' }}>.</span>,
-                        <span key="signature" style={{ color: '#6f42c1', fontWeight: 500 }}>{parts[2]}</span>
-                      ];
-                    })()}
-                  </pre>
+                  <div style={{ maxHeight: 240, overflowY: 'auto', width: '100%' }}>
+                    <pre className="jwt-color-overlay" style={{ padding: '12px 48px 12px 16px', fontSize: 16, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all', lineHeight: 1.4, zIndex: 1, background: '#f9f9f9', borderRadius: 8, boxSizing: 'border-box', margin: 0 }}>
+                      {(() => {
+                        const parts = jwt.split('.');
+                        return [
+                          <span key="header" style={{ color: '#28a745', fontWeight: 500 }}>{parts[0]}</span>,
+                          <span key="dot1" style={{ color: '#6c757d' }}>.</span>,
+                          <span key="payload" style={{ color: '#495057', fontWeight: 500 }}>{parts[1]}</span>,
+                          <span key="dot2" style={{ color: '#6c757d' }}>.</span>,
+                          <span key="signature" style={{ color: '#6f42c1', fontWeight: 500 }}>{parts[2]}</span>
+                        ];
+                      })()}
+                    </pre>
+                  </div>
                 ) : (
                   <textarea
                     className="form-input jwt-token-display"
