@@ -48,6 +48,14 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
           JWE Decrypt
         </button>
       </div>
+      <div className="authgear-logo-section">
+        <span className="powered-by-text">Powered by</span>
+        <img 
+          src="/authgear-logo.svg" 
+          alt="Authgear Logo" 
+          className="authgear-logo"
+        />
+      </div>
     </div>
   );
 };

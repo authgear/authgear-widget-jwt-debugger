@@ -24,13 +24,37 @@ body {
 .header-section {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   background-color: white;
   border-bottom: 1px solid #e9ecef;
   padding: 0 24px;
   flex-wrap: nowrap;
   min-height: 60px;
   overflow: hidden;
+}
+
+.authgear-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.powered-by-text {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.authgear-logo {
+  height: 24px;
+  width: auto;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.authgear-logo:hover {
+  opacity: 1;
 }
 
 .tabs {
@@ -744,6 +768,10 @@ body {
     align-items: center;
     padding: 0 16px;
     flex-wrap: nowrap;
+  }
+  
+  .authgear-logo-section {
+    display: none;
   }
   
   .example-section-header {
