@@ -1,4 +1,4 @@
-# JWT Debugger Widget for Authgear
+# Authgear JWT Debugger Widget
 
 A comprehensive React-based JWT debugging tool designed to be embedded in authgear.com via iframe. This widget provides full JWT decoding, validation, signature verification, and JWE encryption/decryption capabilities.
 
@@ -60,35 +60,29 @@ The widget displays descriptions for all standard JWT claims:
 - ✅ Error handling with user-friendly messages
 - ✅ Custom React hooks for signature verification
 
-## Installation
+## Development
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd authgear-widget-jwt-debugger
+To start the development server:
+
+```
+npm run dev
 ```
 
-2. Install dependencies:
-```bash
-npm install
+## Build
+
+To build the project for production:
+
 ```
-
-3. Start the development server:
-```bash
-npm start
-```
-
-The widget will be available at `http://localhost:3000`.
-
-## Building for Production
-
-To build the widget for production:
-
-```bash
 npm run build
 ```
 
-This creates a `build` folder with optimized files ready for deployment.
+## Preview
+
+To preview the production build locally:
+
+```
+npm run preview
+```
 
 ## Embedding via iframe
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import JSONRenderer from './JSONRenderer';
+import JSONRenderer from './JSONRenderer.jsx';
 import TimeConversionModal from './TimeConversionModal';
 
 const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, copyPayload }) => {

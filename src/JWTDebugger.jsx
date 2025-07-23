@@ -4,13 +4,14 @@ import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
 import { getDefaultJWTExampleData } from './services/exampleGenerator';
 import { generateRSAKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './services/keyUtils';
-import TabNavigation from './components/TabNavigation';
-import JWTTokenInput from './components/JWTTokenInput';
-import DecodedSections from './components/DecodedSections';
-import SignatureVerification from './components/SignatureVerification';
-import JWTEncoder from './components/JWTEncoder';
-import JWEEncrypt from './components/JWEEncrypt';
-import JWEDecrypt from './components/JWEDecrypt';
+import { SUPPORTED_ALGORITHMS } from './constants';
+import TabNavigation from './components/TabNavigation.jsx';
+import JWTTokenInput from './components/JWTTokenInput.jsx';
+import DecodedSections from './components/DecodedSections.jsx';
+import SignatureVerification from './components/SignatureVerification.jsx';
+import JWTEncoder from './components/JWTEncoder.jsx';
+import JWEEncrypt from './components/JWEEncrypt.jsx';
+import JWEDecrypt from './components/JWEDecrypt.jsx';
 import { useSignatureVerification } from './hooks/useSignatureVerification';
 
 // Custom hook for example generation
@@ -139,7 +140,7 @@ const JWTDebugger = () => {
                   height: 24
                 }}
               >
-                {require('./constants').SUPPORTED_ALGORITHMS.map(alg => (
+                {SUPPORTED_ALGORITHMS.map(alg => (
                   <option key={alg.value} value={alg.value}>
                     {alg.label}
                   </option>
@@ -225,7 +226,7 @@ const JWTDebugger = () => {
                   height: 24
                 }}
               >
-                {require('./constants').SUPPORTED_ALGORITHMS.map(alg => (
+                {SUPPORTED_ALGORITHMS.map(alg => (
                   <option key={alg.value} value={alg.value}>
                     {alg.label}
                   </option>

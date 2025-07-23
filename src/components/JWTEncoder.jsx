@@ -6,7 +6,7 @@ import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism.css';
 import { useClipboard } from '../utils';
 import { createValidationError, ERROR_MESSAGES } from '../utils/errorHandling';
-import TimeConversionModal from './TimeConversionModal';
+import TimeConversionModal from './TimeConversionModal.jsx';
 
 const defaultHeader = `{
   "typ": "JWT",
