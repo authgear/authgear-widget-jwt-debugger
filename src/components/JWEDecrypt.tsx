@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
-const JWEDecrypt = () => {
+interface JWEDecryptProps {
+  // No props needed for this component
+}
+
+const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   const [jwe, setJwe] = useState('');
   const [privateKey, setPrivateKey] = useState('');
   const [keyFormat, setKeyFormat] = useState('pem');

@@ -6,7 +6,11 @@ import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism.css';
 import { useClipboard } from '../utils';
 import { createValidationError, ERROR_MESSAGES } from '../utils/errorHandling';
-import TimeConversionModal from './TimeConversionModal.jsx';
+import TimeConversionModal from './TimeConversionModal';
+
+interface JWTEncoderProps {
+  onEncryptToken: (jwt: string) => void;
+}
 
 const defaultHeader = `{
   "typ": "JWT",
@@ -21,7 +25,7 @@ const defaultPayload = `{
 const highlightWithPrism = (code) =>
   Prism.highlight(code, Prism.languages.json, 'json');
 
-const JWTEncoder = forwardRef((props, ref) => {
+const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string, secret: string) => void }, JWTEncoderProps>((props, ref) => {
   const { onEncryptToken } = props;
   const [header, setHeader] = useState(defaultHeader);
   const [payload, setPayload] = useState(defaultPayload);
@@ -135,7 +139,7 @@ const JWTEncoder = forwardRef((props, ref) => {
   }));
 
   // Handle inserting NumericDate into payload
-  const handleInsertNumericDate = (numericDate) => {
+  const handleInsertNumericDate = (numericDate: string) => {
     try {
       // Try to parse the current payload as JSON
       let payloadObj = {};

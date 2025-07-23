@@ -2,7 +2,15 @@ import React, { useRef, useEffect } from 'react';
 import { useClipboard } from '../utils';
 import { getErrorMessage } from '../utils/errorHandling';
 
-const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) => {
+interface JWTTokenInputProps {
+  jwtToken: string;
+  setJwtToken: (token: string) => void;
+  decodedJWT: { error?: string; valid?: boolean } | { type: any; message: any; details: null; timestamp: string } | null;
+  signatureResult: { valid?: boolean; error?: string } | null;
+  copyToClipboard: boolean | ((text: any) => Promise<boolean>);
+}
+
+const JWTTokenInput: React.FC<JWTTokenInputProps> = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) => {
   const [copied, copy] = useClipboard();
   
   // Function to determine if text should be colored
@@ -13,7 +21,7 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
   };
 
   // Function to get the color class for each character
-  const getColorClass = (char, index, jwtString) => {
+  const getColorClass = (char: string, index: number, jwtString: string) => {
     const parts = jwtString.split('.');
     let charCount = 0;
     
@@ -33,8 +41,8 @@ const JWTTokenInput = ({ jwtToken, setJwtToken, decodedJWT, signatureResult }) =
     return '';
   };
 
-  const textareaRef = useRef(null);
-  const overlayRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   // Sync overlay scroll with textarea scroll
   const handleScroll = () => {

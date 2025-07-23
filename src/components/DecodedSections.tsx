@@ -1,11 +1,38 @@
 import React, { useState } from 'react';
-import JSONRenderer from './JSONRenderer.jsx';
+import JSONRenderer from './JSONRenderer';
 import TimeConversionModal from './TimeConversionModal';
 
-const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, copyPayload }) => {
+interface DecodedSectionsProps {
+  decodedJWT: {
+    header: any;
+    payload: any;
+    error?: string;
+  } | { type: any; message: any; details: null; timestamp: string } | null;
+  copiedHeader: boolean | ((text: any) => Promise<boolean>);
+  copiedPayload: boolean | ((text: any) => Promise<boolean>);
+  copyHeader: boolean | ((text: any) => Promise<boolean>);
+  copyPayload: boolean | ((text: any) => Promise<boolean>);
+}
+
+const DecodedSections: React.FC<DecodedSectionsProps> = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, copyPayload }) => {
   const [showTimeModal, setShowTimeModal] = useState(false);
 
-  const renderJSON = (obj, type) => {
+  // Type guards
+  const isValidJWT = (obj: any): obj is { header: any; payload: any; error?: string } => {
+    return obj && typeof obj === 'object' && 'header' in obj && 'payload' in obj;
+  };
+
+  const isErrorObject = (obj: any): obj is { type: any; message: any; details: null; timestamp: string } => {
+    return obj && typeof obj === 'object' && 'type' in obj && 'message' in obj;
+  };
+
+  // Extract functions from useClipboard tuples
+  const copyHeaderFn = typeof copyHeader === 'function' ? copyHeader : () => Promise.resolve(false);
+  const copyPayloadFn = typeof copyPayload === 'function' ? copyPayload : () => Promise.resolve(false);
+  const copiedHeaderBool = typeof copiedHeader === 'boolean' ? copiedHeader : false;
+  const copiedPayloadBool = typeof copiedPayload === 'boolean' ? copiedPayload : false;
+
+  const renderJSON = (obj: any, type: string) => {
     return <JSONRenderer obj={obj} type={type} />;
   };
 
@@ -17,21 +44,21 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, 
         </div>
         <div className="panel-content">
           <div className="json-container">
-            {decodedJWT && !decodedJWT.error ? (
+            {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
               <>
                 <button 
-                  className={`copy-icon json-copy-icon ${copiedHeader ? 'copied' : ''}`}
-                  onClick={() => decodedJWT && !decodedJWT.error && copyHeader(JSON.stringify(decodedJWT.header, null, 2))}
+                  className={`copy-icon json-copy-icon ${copiedHeaderBool ? 'copied' : ''}`}
+                  onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyHeaderFn(JSON.stringify(decodedJWT.header, null, 2))}
                   title="Copy Decoded Header"
-                  disabled={!decodedJWT || decodedJWT.error}
+                  disabled={!decodedJWT || !isValidJWT(decodedJWT) || !!decodedJWT.error}
                 >
-                  {copiedHeader ? '✓' : 'COPY'}
+                  {copiedHeaderBool ? '✓' : 'COPY'}
                 </button>
                 {renderJSON(decodedJWT.header, 'header')}
               </>
             ) : (
               <div className="json-display json-header" style={{ color: '#6c757d', fontStyle: 'italic' }}>
-                {decodedJWT && decodedJWT.error ? 'Invalid JWT' : 'Decoded header will appear here'}
+                {decodedJWT && isValidJWT(decodedJWT) && decodedJWT.error ? 'Invalid JWT' : 'Decoded header will appear here'}
               </div>
             )}
           </div>
@@ -69,21 +96,21 @@ const DecodedSections = ({ decodedJWT, copiedHeader, copiedPayload, copyHeader, 
         </div>
         <div className="panel-content">
           <div className="json-container">
-            {decodedJWT && !decodedJWT.error ? (
+            {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
               <>
                 <button 
-                  className={`copy-icon json-copy-icon ${copiedPayload ? 'copied' : ''}`}
-                  onClick={() => decodedJWT && !decodedJWT.error && copyPayload(JSON.stringify(decodedJWT.payload, null, 2))}
+                  className={`copy-icon json-copy-icon ${copiedPayloadBool ? 'copied' : ''}`}
+                  onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyPayloadFn(JSON.stringify(decodedJWT.payload, null, 2))}
                   title="Copy Decoded Payload"
-                  disabled={!decodedJWT || decodedJWT.error}
+                  disabled={!decodedJWT || !isValidJWT(decodedJWT) || !!decodedJWT.error}
                 >
-                  {copiedPayload ? '✓' : 'COPY'}
+                  {copiedPayloadBool ? '✓' : 'COPY'}
                 </button>
                 {renderJSON(decodedJWT.payload, 'payload')}
               </>
             ) : (
               <div className="json-display json-payload" style={{ color: '#6c757d', fontStyle: 'italic' }}>
-                {decodedJWT && decodedJWT.error ? 'Invalid JWT' : 'Decoded payload will appear here'}
+                {decodedJWT && isValidJWT(decodedJWT) && decodedJWT.error ? 'Invalid JWT' : 'Decoded payload will appear here'}
               </div>
             )}
           </div>

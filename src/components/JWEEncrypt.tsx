@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
-const JWEEncrypt = ({ initialJwt = '' }) => {
+interface JWEEncryptProps {
+  initialJwt?: string;
+}
+
+const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   const [jwt, setJwt] = useState(initialJwt);
   const [publicKey, setPublicKey] = useState('');
   const [keyFormat, setKeyFormat] = useState('pem');

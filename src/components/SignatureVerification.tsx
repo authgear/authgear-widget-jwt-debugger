@@ -1,6 +1,28 @@
 import React from 'react';
 
-const SignatureVerification = ({ 
+interface SecretConfig {
+  value: string;
+  setValue: (value: string) => void;
+  encoding: string;
+  setEncoding: (value: string) => void;
+}
+
+interface PublicKeyConfig {
+  value: string;
+  setValue: (value: string) => void;
+  jwkValue: string;
+  setJwkValue: (value: string) => void;
+  type: string;
+  setType: (value: string) => void;
+}
+
+interface SignatureVerificationProps {
+  algorithm: string;
+  secretConfig: SecretConfig;
+  publicKeyConfig: PublicKeyConfig;
+}
+
+const SignatureVerification: React.FC<SignatureVerificationProps> = ({ 
   algorithm,
   secretConfig,
   publicKeyConfig

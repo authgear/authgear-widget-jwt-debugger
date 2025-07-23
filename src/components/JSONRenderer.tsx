@@ -2,7 +2,12 @@ import React from 'react';
 import { CLAIM_DESCRIPTIONS, TIMESTAMP_CLAIMS } from '../constants';
 import { formatTimestamp, isTimestampClaim } from '../utils';
 
-const JSONRenderer = ({ obj, type }) => {
+interface JSONRendererProps {
+  obj: any;
+  type: string;
+}
+
+const JSONRenderer: React.FC<JSONRendererProps> = ({ obj, type }) => {
   if (!obj) obj = {};
   const jsonString = JSON.stringify(obj, null, 2);
   const lines = jsonString.split('\n');

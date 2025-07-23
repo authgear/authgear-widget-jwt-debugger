@@ -1,9 +1,24 @@
 import React from 'react';
 import { SUPPORTED_ALGORITHMS } from '../constants';
 
-const TabNavigation = ({ 
+interface TabNavigationProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  showExampleDropdown: boolean;
+  setShowExampleDropdown: (show: boolean) => void;
+  selectedAlg: string;
+  setSelectedAlg: (alg: string) => void;
+  generateExample: () => Promise<void>;
+}
+
+const TabNavigation: React.FC<TabNavigationProps> = ({ 
   activeTab, 
-  setActiveTab
+  setActiveTab,
+  showExampleDropdown,
+  setShowExampleDropdown,
+  selectedAlg,
+  setSelectedAlg,
+  generateExample
 }) => {
   return (
     <div className="header-section">

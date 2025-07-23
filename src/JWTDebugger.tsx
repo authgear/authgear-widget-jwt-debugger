@@ -1,21 +1,22 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import type { JSX } from 'react';
 import { decodeJWT, useClipboard } from './utils';
 import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
 import { getDefaultJWTExampleData } from './services/exampleGenerator';
 import { generateRSAKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './services/keyUtils';
 import { SUPPORTED_ALGORITHMS } from './constants';
-import TabNavigation from './components/TabNavigation.jsx';
-import JWTTokenInput from './components/JWTTokenInput.jsx';
-import DecodedSections from './components/DecodedSections.jsx';
-import SignatureVerification from './components/SignatureVerification.jsx';
-import JWTEncoder from './components/JWTEncoder.jsx';
-import JWEEncrypt from './components/JWEEncrypt.jsx';
-import JWEDecrypt from './components/JWEDecrypt.jsx';
+import TabNavigation from './components/TabNavigation';
+import JWTTokenInput from './components/JWTTokenInput';
+import DecodedSections from './components/DecodedSections';
+import SignatureVerification from './components/SignatureVerification';
+import JWTEncoder from './components/JWTEncoder';
+import JWEEncrypt from './components/JWEEncrypt';
+import JWEDecrypt from './components/JWEDecrypt';
 import { useSignatureVerification } from './hooks/useSignatureVerification';
 
 // Custom hook for example generation
-function useExampleGenerator(selectedAlg, activeTab, encoderRef, setJwtToken, setSecret, setPublicKey) {
+function useExampleGenerator(selectedAlg: string, activeTab: string, encoderRef: React.RefObject<any>, setJwtToken: React.Dispatch<React.SetStateAction<string>>, setSecret: React.Dispatch<React.SetStateAction<string>>, setPublicKey: React.Dispatch<React.SetStateAction<string>>) {
   return React.useCallback(async () => {
     if (activeTab === 'decoder') {
       if (selectedAlg.startsWith('RS')) {
@@ -53,12 +54,12 @@ function useExampleGenerator(selectedAlg, activeTab, encoderRef, setJwtToken, se
   }, [selectedAlg, activeTab, encoderRef, setJwtToken, setSecret, setPublicKey]);
 }
 
-const JWTDebugger = () => {
+function JWTDebugger() {
   const [activeTab, setActiveTab] = useState('decoder');
   const [jwtToken, setJwtToken] = useState('');
   const [selectedAlg, setSelectedAlg] = useState('HS256');
   const [showExampleDropdown, setShowExampleDropdown] = useState(false);
-  const encoderRef = useRef();
+  const encoderRef = useRef<{ setExampleData: (header: string, payload: string, secret: string) => void } | null>(null);
   const [jweEncryptJwt, setJweEncryptJwt] = useState('');
 
   const [copiedHeader, copyHeader] = useClipboard();
@@ -96,7 +97,7 @@ const JWTDebugger = () => {
   const generateExample = useExampleGenerator(selectedAlg, activeTab, encoderRef, setJwtToken, secretConfig.setValue, publicKeyConfig.setValue);
 
   // Function to handle switching to JWE Encrypt tab with JWT
-  const switchToJweEncrypt = (jwt) => {
+  const switchToJweEncrypt = (jwt: string) => {
     setJweEncryptJwt(jwt);
     setActiveTab('jwe-encrypt');
   };
@@ -122,7 +123,7 @@ const JWTDebugger = () => {
               <select
                 className="form-select"
                 value={selectedAlg}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   setSelectedAlg(e.target.value);
                 }}
                 style={{
@@ -208,7 +209,7 @@ const JWTDebugger = () => {
               <select
                 className="form-select"
                 value={selectedAlg}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                   setSelectedAlg(e.target.value);
                 }}
                 style={{

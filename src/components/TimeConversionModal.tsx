@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const TimeConversionModal = ({ isOpen, onClose }) => {
+interface TimeConversionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const TimeConversionModal: React.FC<TimeConversionModalProps> = ({ isOpen, onClose }) => {
   const [datetimeInput, setDatetimeInput] = useState('');
   const [numericDateInput, setNumericDateInput] = useState('');
   const [convertedNumericDate, setConvertedNumericDate] = useState('');
