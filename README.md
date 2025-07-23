@@ -173,13 +173,23 @@ The widget now supports Elliptic Curve Digital Signature Algorithm (ECDSA):
 2. **Decryption**: Paste a JWE token and provide the decryption key
 3. The widget supports both symmetric and asymmetric key encryption
 
-## Browser Support
+## Browser Support & Security
 
-The widget supports all modern browsers:
-- Chrome 60+
-- Firefox 60+
-- Safari 12+
-- Edge 79+
+### Required Browser Features
+The widget requires browsers with Web Crypto API support for secure JWT operations:
+- **Chrome 60+**
+- **Firefox 60+**
+- **Safari 12+**
+- **Edge 79+**
+
+### Security Features
+- All cryptographic operations are performed client-side in your browser
+- No JWT tokens or secrets are sent to any server
+- Uses the Web Crypto API for secure cryptographic operations
+- Requires a modern browser for proper security implementation
+
+### Browser Compatibility Check
+The application automatically checks for Web Crypto API support and will display a compatibility message if your browser doesn't support the required features.
 
 ## Security Considerations
 
@@ -244,6 +254,7 @@ iframe-example.html           # Example iframe integration
 - ✨ **Updated dependencies**: Latest versions of jose and other packages
 - ✨ **Improved error handling**: Better error messages and validation
 - ✨ **Enhanced UI**: Improved user experience with better feedback
+- 🔒 **Web Crypto API requirement**: Ensures secure cryptographic operations in modern browsers
 
 ## Contributing
 
