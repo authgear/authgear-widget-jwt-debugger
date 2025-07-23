@@ -5,7 +5,7 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-json';
 import 'prismjs/themes/prism.css';
 import { useClipboard } from '../utils';
-import { createValidationError, ERROR_MESSAGES } from '../utils/errorHandling';
+import { ERROR_MESSAGES } from '../utils/errorHandling';
 import TimeConversionModal from './TimeConversionModal';
 
 interface JWTEncoderProps {
@@ -22,7 +22,7 @@ const defaultPayload = `{
   "iat": 17356
 }`;
 
-const highlightWithPrism = (code) =>
+const highlightWithPrism = (code: string) =>
   Prism.highlight(code, Prism.languages.json, 'json');
 
 const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string, secret: string) => void }, JWTEncoderProps>((props, ref) => {
@@ -94,7 +94,7 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
             .sign(secretBytes);
           setJwt(jwt);
         } catch (e) {
-          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${e.message}`);
+          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${(e as Error).message}`);
         }
       } else if (headerObj.alg.startsWith('RS') || headerObj.alg.startsWith('ES')) {
         if (!secretOrKey) {
@@ -114,7 +114,7 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
             .sign(privateKey);
           setJwt(jwt);
         } catch (e) {
-          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${e.message}`);
+          setSecretError(`${ERROR_MESSAGES.ENCODING_FAILED}: ${(e as Error).message}`);
         }
       } else {
         setHeaderError(ERROR_MESSAGES.UNSUPPORTED_ALGORITHM);
@@ -128,10 +128,10 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
       setHeader(header);
       setPayload(payload);
       setSecretOrKey(secret);
-      // If alg is RS*, set privateKeyFormat to 'pem'
+      // If alg is RS* or ES*, set privateKeyFormat to 'pem'
       try {
         const alg = JSON.parse(header).alg;
-        if (alg && alg.startsWith('RS')) {
+        if (alg && (alg.startsWith('RS') || alg.startsWith('ES'))) {
           setPrivateKeyFormat('pem');
         }
       } catch {}
@@ -142,7 +142,7 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
   const handleInsertNumericDate = (numericDate: string) => {
     try {
       // Try to parse the current payload as JSON
-      let payloadObj = {};
+      let payloadObj: any = {};
       if (payload.trim()) {
         payloadObj = JSON.parse(payload);
       }
@@ -451,7 +451,7 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
                 )}
                 <button 
                   className="copy-icon"
-                  onClick={() => copy(jwt)}
+                  onClick={() => typeof copy === 'function' && copy(jwt)}
                   disabled={!jwt}
                   title="Copy JWT"
                   style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 2 }}

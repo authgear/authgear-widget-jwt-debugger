@@ -21,6 +21,33 @@ export async function generateRSAKeyPair() {
   );
 }
 
+// Generate EC key pair
+export async function generateECKeyPair(algorithm) {
+  let curve;
+  switch (algorithm) {
+    case 'ES256':
+      curve = 'P-256';
+      break;
+    case 'ES384':
+      curve = 'P-384';
+      break;
+    case 'ES512':
+      curve = 'P-521';
+      break;
+    default:
+      curve = 'P-256'; // Default to P-256
+  }
+
+  return await window.crypto.subtle.generateKey(
+    {
+      name: 'ECDSA',
+      namedCurve: curve
+    },
+    true,
+    ['sign', 'verify']
+  );
+}
+
 // Export key pair to PEM format
 export async function exportKeyPairToPEM(keyPair) {
   const exportedPriv = await window.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
@@ -35,6 +62,13 @@ export async function exportKeyPairToPEM(keyPair) {
 // Generate RSA key pair and export to PEM
 export async function generateAndExportRSAKeyPair() {
   const keyPair = await generateRSAKeyPair();
+  const pemKeys = await exportKeyPairToPEM(keyPair);
+  return { keyPair, ...pemKeys };
+}
+
+// Generate EC key pair and export to PEM
+export async function generateAndExportECKeyPair(algorithm) {
+  const keyPair = await generateECKeyPair(algorithm);
   const pemKeys = await exportKeyPairToPEM(keyPair);
   return { keyPair, ...pemKeys };
 } 

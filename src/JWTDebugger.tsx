@@ -4,7 +4,7 @@ import { decodeJWT, useClipboard } from './utils';
 import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
 import { getDefaultJWTExampleData } from './services/exampleGenerator';
-import { generateRSAKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './services/keyUtils';
+import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './services/keyUtils';
 import { SUPPORTED_ALGORITHMS } from './constants';
 import TabNavigation from './components/TabNavigation';
 import JWTTokenInput from './components/JWTTokenInput';
@@ -19,9 +19,14 @@ import { useSignatureVerification } from './hooks/useSignatureVerification';
 function useExampleGenerator(selectedAlg: string, activeTab: string, encoderRef: React.RefObject<any>, setJwtToken: React.Dispatch<React.SetStateAction<string>>, setSecret: React.Dispatch<React.SetStateAction<string>>, setPublicKey: React.Dispatch<React.SetStateAction<string>>) {
   return React.useCallback(async () => {
     if (activeTab === 'decoder') {
-      if (selectedAlg.startsWith('RS')) {
+      if (selectedAlg.startsWith('RS') || selectedAlg.startsWith('ES')) {
         // Generate key pair, then pass to generateExampleJWT so JWT and public key match
-        const keyPair = await generateRSAKeyPair();
+        let keyPair;
+        if (selectedAlg.startsWith('RS')) {
+          keyPair = await generateRSAKeyPair();
+        } else {
+          keyPair = await generateECKeyPair(selectedAlg);
+        }
         const { jwt: realJwt, generatedPublicKey } = await generateExampleJWT(selectedAlg, keyPair);
         setJwtToken(realJwt);
         setSecret('');
@@ -42,6 +47,11 @@ function useExampleGenerator(selectedAlg: string, activeTab: string, encoderRef:
       if (selectedAlg.startsWith('RS')) {
         // Generate a real RSA private key as PEM
         const keyPair = await generateRSAKeyPair();
+        const pemKeys = await exportKeyPairToPEM(keyPair);
+        realSecret = pemKeys.privateKey;
+      } else if (selectedAlg.startsWith('ES')) {
+        // Generate a real EC private key as PEM
+        const keyPair = await generateECKeyPair(selectedAlg);
         const pemKeys = await exportKeyPairToPEM(keyPair);
         realSecret = pemKeys.privateKey;
       }

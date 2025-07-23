@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { generateRSAKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './keyUtils';
+import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './keyUtils';
 import { createError, ERROR_TYPES, ERROR_MESSAGES, handleAsyncOperation } from '../utils/errorHandling';
 
 // Generate example JWT
@@ -58,6 +58,21 @@ export const generateExampleJWT = async (selectedAlg, keyPairArg) => {
       // Export keys as PEM
       generatedPrivateKey = pemKeys.privateKey;
       generatedPublicKey = pemKeys.publicKey;
+    } else if (selectedAlg.startsWith('ES')) {
+      // Use provided keyPair or generate a new one
+      if (!keyPair) {
+        keyPair = await generateECKeyPair(selectedAlg);
+      }
+      const pemKeys = await exportKeyPairToPEM(keyPair);
+      const privateKey = await jose.importPKCS8(pemKeys.privateKey, selectedAlg);
+      jwt = await new jose.SignJWT(payload)
+        .setProtectedHeader(header)
+        .setIssuedAt()
+        .setExpirationTime('1h')
+        .sign(privateKey);
+      // Export keys as PEM
+      generatedPrivateKey = pemKeys.privateKey;
+      generatedPublicKey = pemKeys.publicKey;
     }
 
     return { jwt, generatedSecret, generatedPrivateKey, generatedPublicKey, keyPair };
@@ -84,7 +99,7 @@ export function getDefaultJWTExampleData(selectedAlg) {
       case 'HS512': secret = 'your-512-bit-secret'; break;
       default: secret = 'your-secret';
     }
-  } else if (selectedAlg.startsWith('RS')) {
+  } else if (selectedAlg.startsWith('RS') || selectedAlg.startsWith('ES')) {
     secret = '...'; // Placeholder, real key generated elsewhere
   }
   return { header, payload, secret };
