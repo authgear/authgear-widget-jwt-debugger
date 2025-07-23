@@ -49,7 +49,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         </button>
       </div>
       <div className="authgear-logo-section">
-        <span className="powered-by-text">Powered by</span>
+        <span className="powered-by-text">Presented by</span>
         <img 
           src="/authgear-logo.svg" 
           alt="Authgear Logo" 
