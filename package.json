@@ -2,6 +2,7 @@
   "name": "authgear-jwt-debugger-widget",
   "version": "1.0.0",
   "description": "JWT Debugger Widget for Authgear",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -12,7 +13,7 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "jose": "^5.10.0",
+    "jose": "^6.0.12",
     "prismjs": "^1.30.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

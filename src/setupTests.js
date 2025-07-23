@@ -5,6 +5,9 @@ import { TextEncoder, TextDecoder } from 'text-encoding';
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
+// Import crypto polyfill for tests
+import './utils/cryptoPolyfill';
+
 // Mock window.crypto for tests
 Object.defineProperty(window, 'crypto', {
   value: {

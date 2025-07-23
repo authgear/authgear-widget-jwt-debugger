@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './utils/cryptoPolyfill';
 import './index.css';
 import JWTDebugger from './JWTDebugger';
 
