@@ -18,31 +18,22 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   const [compatError, setCompatError] = useState('');
   const [copied, copy] = useClipboard();
 
-  // Supported algorithms and encryption methods
+  // Supported algorithms and encryption methods (JWE standard only)
   const supportedAlgs = [
-    { value: 'RSA-OAEP', label: 'RSA-OAEP' },
-    { value: 'RSA-OAEP-256', label: 'RSA-OAEP-256' },
-    { value: 'RSA1_5', label: 'RSA1_5' },
-    { value: 'A128KW', label: 'A128KW' },
-    { value: 'A192KW', label: 'A192KW' },
-    { value: 'A256KW', label: 'A256KW' },
-    { value: 'dir', label: 'Direct' },
-    { value: 'ECDH-ES', label: 'ECDH-ES' },
-    { value: 'ECDH-ES+A128KW', label: 'ECDH-ES+A128KW' },
-    { value: 'ECDH-ES+A192KW', label: 'ECDH-ES+A192KW' },
-    { value: 'ECDH-ES+A256KW', label: 'ECDH-ES+A256KW' },
-    { value: 'PBES2-HS256+A128KW', label: 'PBES2-HS256+A128KW' },
-    { value: 'PBES2-HS384+A192KW', label: 'PBES2-HS384+A192KW' },
-    { value: 'PBES2-HS512+A256KW', label: 'PBES2-HS512+A256KW' }
+    { value: 'RSA1_5', label: 'RSA1_5 - RSA using RSA-PKCS1-1.5 padding' },
+    { value: 'RSA-OAEP', label: 'RSA-OAEP - RSA using Optimal Asymmetric Encryption Padding' },
+    { value: 'ECDH-ES', label: 'ECDH-ES - Elliptic Curve Diffie-Hellman Ephemeral Static' },
+    { value: 'A128KW', label: 'A128KW - AES Key Wrap Algorithm using 128 bit keys' },
+    { value: 'A256KW', label: 'A256KW - AES Key Wrap Algorithm using 256 bit keys' },
+    { value: 'A128GCM', label: 'A128GCM - AES using 128 bit keys in Galois/Counter Mode' },
+    { value: 'A256GCM', label: 'A256GCM - AES using 256 bit keys in Galois/Counter Mode' }
   ];
 
   const supportedEnc = [
-    { value: 'A128CBC-HS256', label: 'A128CBC-HS256' },
-    { value: 'A192CBC-HS384', label: 'A192CBC-HS384' },
-    { value: 'A256CBC-HS512', label: 'A256CBC-HS512' },
-    { value: 'A128GCM', label: 'A128GCM' },
-    { value: 'A192GCM', label: 'A192GCM' },
-    { value: 'A256GCM', label: 'A256GCM' }
+    { value: 'A128CBC', label: 'A128CBC - AES using 128 bit keys in Cipher Block Chaining mode' },
+    { value: 'A256CBC', label: 'A256CBC - AES using 256 bit keys in Cipher Block Chaining mode' },
+    { value: 'A128GCM', label: 'A128GCM - AES using 128 bit keys in Galois/Counter Mode' },
+    { value: 'A256GCM', label: 'A256GCM - AES using 256 bit keys in Galois/Counter Mode' }
   ];
 
   // Update JWT when initialJwt prop changes
@@ -91,7 +82,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
         .encrypt(importedKey);
       setJwe(jweResult);
     } catch (e) {
-      setError(e.message || 'Encryption failed');
+      setError((e as Error)?.message || 'Encryption failed');
     } finally {
       setEncrypting(false);
     }
@@ -296,7 +287,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
           )}
           <button
             className="copy-icon"
-            onClick={() => copy(jwe)}
+            onClick={() => typeof copy === 'function' && copy(jwe)}
             disabled={!jwe}
             title="Copy JWE"
             style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 3 }}
