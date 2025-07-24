@@ -22,14 +22,14 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
     try {
       let importedKey;
       if (keyFormat === 'pem') {
-        importedKey = await jose.importPKCS8(privateKey, undefined);
+        importedKey = await jose.importPKCS8(privateKey, 'RSA-OAEP');
       } else {
-        importedKey = await jose.importJWK(JSON.parse(privateKey), undefined);
+        importedKey = await jose.importJWK(JSON.parse(privateKey), 'RSA-OAEP');
       }
       const { plaintext } = await jose.compactDecrypt(jwe, importedKey);
       setJwt(new TextDecoder().decode(plaintext));
     } catch (e) {
-      setError(e.message || 'Decryption failed');
+      setError((e as Error)?.message || 'Decryption failed');
     } finally {
       setDecrypting(false);
     }
@@ -124,21 +124,12 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
           )}
           <button
             className="copy-icon"
-            onClick={() => copy(jwt)}
+            onClick={() => typeof copy === 'function' && copy(jwt)}
             disabled={!jwt}
             title="Copy JWT"
             style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 3 }}
           >
             {copied ? '✓' : 'COPY'}
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setJwt('')}
-            disabled={!jwt}
-            title="Clear JWT"
-            style={{ marginTop: 8, fontSize: 12, padding: '2px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', color: '#333', cursor: 'pointer', display: 'block' }}
-          >
-            Clear
           </button>
         </div>
       </div>

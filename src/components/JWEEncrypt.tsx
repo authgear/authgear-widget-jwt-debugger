@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
@@ -19,6 +19,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   const [error, setError] = useState('');
   const [compatError, setCompatError] = useState('');
   const [copied, copy] = useClipboard();
+  const lastEncryptInputRef = useRef<string>('');
 
   // Determine if the selected algorithm is symmetric
   const isSymmetricAlg = alg.startsWith('A') && (alg.includes('KW') || alg.includes('GCM')) && !alg.includes('ECDH-ES+');
@@ -83,6 +84,8 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
       setJwe(jweResult);
     } catch (e) {
       setError((e as Error)?.message || 'Encryption failed');
+      // Reset the ref on error so we can retry
+      lastEncryptInputRef.current = '';
     } finally {
       setEncrypting(false);
     }
@@ -101,6 +104,9 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     if (!jwt || (isSymmetricAlg ? !secretKey : !publicKey)) {
       setError('');
       setJwe('');
+      setEncrypting(false);
+      lastEncryptInputRef.current = '';
+      return;
     }
 
     if (isSymmetricAlg) {
@@ -131,9 +137,34 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     // Auto-encrypt when both JWT and key are available
     const shouldEncrypt = jwt && (isSymmetricAlg ? secretKey : publicKey) && !compatError;
     if (shouldEncrypt && !encrypting) {
-      handleEncrypt();
+      // Create a unique key for the current input state
+      const currentInputKey = `${jwt}-${isSymmetricAlg ? secretKey : publicKey}-${alg}-${enc}-${keyFormat}`;
+      
+      // Only encrypt if we haven't already encrypted for this exact input state
+      if (lastEncryptInputRef.current !== currentInputKey) {
+        lastEncryptInputRef.current = currentInputKey;
+        
+        // Add a small delay to prevent rapid successive calls
+        const timeoutId = setTimeout(() => {
+          handleEncrypt();
+        }, 100);
+        
+        return () => clearTimeout(timeoutId);
+      }
     }
-  }, [jwt, publicKey, secretKey, alg, keyFormat, isSymmetricAlg, compatError, encrypting, handleEncrypt]);
+  }, [jwt, publicKey, secretKey, alg, enc, keyFormat, isSymmetricAlg, compatError, encrypting]);
+
+  // Add a safety timeout to reset encrypting state if it gets stuck
+  useEffect(() => {
+    if (encrypting) {
+      const timeout = setTimeout(() => {
+        setEncrypting(false);
+        setError('Encryption timed out. Please try again.');
+      }, 10000); // 10 second timeout
+
+      return () => clearTimeout(timeout);
+    }
+  }, [encrypting]);
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 24 }}>
@@ -367,15 +398,6 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
             style={{ position: 'absolute', top: 8, right: 8, pointerEvents: 'auto', zIndex: 3 }}
           >
             {copied ? '✓' : 'COPY'}
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setJwe('')}
-            disabled={!jwe}
-            title="Clear JWE"
-            style={{ marginTop: 8, fontSize: 12, padding: '2px 10px', borderRadius: 4, border: '1px solid #ccc', background: '#fff', color: '#333', cursor: 'pointer', display: 'block' }}
-          >
-            Clear
           </button>
         </div>
       </div>
