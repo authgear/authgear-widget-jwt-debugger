@@ -474,13 +474,15 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
                 </div>
               )}
               {jwt && (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => onEncryptToken && onEncryptToken(jwt)}
-                  style={{ marginTop: 12, width: '100%', padding: '8px 16px', fontSize: 14 }}
-                >
-                  Encrypt this token
-                </button>
+                <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => onEncryptToken && onEncryptToken(jwt)}
+                    style={{ padding: '4px 12px', fontSize: 12, border: '1px solid #ced4da', background: '#fff', color: '#333' }}
+                  >
+                    Encrypt this token
+                  </button>
+                </div>
               )}
             </div>
           </div>
