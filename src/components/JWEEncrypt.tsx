@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 
@@ -21,13 +21,16 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   const [copied, copy] = useClipboard();
 
   // Determine if the selected algorithm is symmetric
-  const isSymmetricAlg = alg.startsWith('A') && (alg.includes('KW') || alg.includes('GCM'));
+  const isSymmetricAlg = alg.startsWith('A') && (alg.includes('KW') || alg.includes('GCM')) && !alg.includes('ECDH-ES+');
 
   // Supported algorithms and encryption methods (JWE standard only)
   const supportedAlgs = [
-    { value: 'RSA1_5', label: 'RSA1_5 - RSA using RSA-PKCS1-1.5 padding' },
     { value: 'RSA-OAEP', label: 'RSA-OAEP - RSA using Optimal Asymmetric Encryption Padding' },
+    { value: 'RSA-OAEP-256', label: 'RSA-OAEP-256 - RSA using OAEP with SHA-256' },
     { value: 'ECDH-ES', label: 'ECDH-ES - Elliptic Curve Diffie-Hellman Ephemeral Static' },
+    { value: 'ECDH-ES+A128KW', label: 'ECDH-ES+A128KW - ECDH-ES with AES Key Wrap' },
+    { value: 'ECDH-ES+A192KW', label: 'ECDH-ES+A192KW - ECDH-ES with AES Key Wrap' },
+    { value: 'ECDH-ES+A256KW', label: 'ECDH-ES+A256KW - ECDH-ES with AES Key Wrap' },
     { value: 'A128KW', label: 'A128KW - AES Key Wrap Algorithm using 128 bit keys' },
     { value: 'A256KW', label: 'A256KW - AES Key Wrap Algorithm using 256 bit keys' },
     { value: 'A128GCM', label: 'A128GCM - AES using 128 bit keys in Galois/Counter Mode' },
@@ -41,43 +44,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     { value: 'A256GCM', label: 'A256GCM - AES using 256 bit keys in Galois/Counter Mode' }
   ];
 
-  // Update JWT when initialJwt prop changes
-  useEffect(() => {
-    if (initialJwt) {
-      setJwt(initialJwt);
-    }
-  }, [initialJwt]);
-
-  // Real-time compatibility check for key and alg
-  useEffect(() => {
-    if (isSymmetricAlg) {
-      // For symmetric algorithms, no compatibility check needed
-      setCompatError('');
-      return;
-    }
-    
-    if (!publicKey) {
-      setCompatError('');
-      return;
-    }
-    // Only check if publicKey is present for asymmetric algorithms
-    const checkCompatibility = async () => {
-      try {
-        // Try to import the key with the selected alg
-        if (keyFormat === 'pem') {
-          await jose.importSPKI(publicKey, alg);
-        } else {
-          await jose.importJWK(JSON.parse(publicKey), alg);
-        }
-        setCompatError('');
-      } catch (e) {
-        setCompatError('Selected algorithm is incompatible with the provided public key.');
-      }
-    };
-    checkCompatibility();
-  }, [publicKey, alg, keyFormat, isSymmetricAlg]);
-
-  const handleEncrypt = async () => {
+  const handleEncrypt = useCallback(async () => {
     setError('');
     setJwe('');
     setEncrypting(true);
@@ -119,7 +86,54 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     } finally {
       setEncrypting(false);
     }
-  };
+  }, [jwt, publicKey, secretKey, alg, enc, keyFormat, isSymmetricAlg, secretEncoding]);
+
+  // Update JWT when initialJwt prop changes
+  useEffect(() => {
+    if (initialJwt) {
+      setJwt(initialJwt);
+    }
+  }, [initialJwt]);
+
+  // Real-time compatibility check and auto-encryption
+  useEffect(() => {
+    // Clear errors when inputs are empty
+    if (!jwt || (isSymmetricAlg ? !secretKey : !publicKey)) {
+      setError('');
+      setJwe('');
+    }
+
+    if (isSymmetricAlg) {
+      // For symmetric algorithms, no compatibility check needed
+      setCompatError('');
+    } else {
+      if (!publicKey) {
+        setCompatError('');
+        return;
+      }
+      // Only check if publicKey is present for asymmetric algorithms
+      const checkCompatibility = async () => {
+        try {
+          // Try to import the key with the selected alg
+          if (keyFormat === 'pem') {
+            await jose.importSPKI(publicKey, alg);
+          } else {
+            await jose.importJWK(JSON.parse(publicKey), alg);
+          }
+          setCompatError('');
+        } catch (e) {
+          setCompatError('Selected algorithm is incompatible with the provided public key.');
+        }
+      };
+      checkCompatibility();
+    }
+
+    // Auto-encrypt when both JWT and key are available
+    const shouldEncrypt = jwt && (isSymmetricAlg ? secretKey : publicKey) && !compatError;
+    if (shouldEncrypt && !encrypting) {
+      handleEncrypt();
+    }
+  }, [jwt, publicKey, secretKey, alg, keyFormat, isSymmetricAlg, compatError, encrypting, handleEncrypt]);
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto', padding: 24 }}>
@@ -300,16 +314,6 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
             {error && <div className="error-msg" style={{ marginTop: 8 }}>{error}</div>}
           </div>
         </div>
-        <div style={{ marginTop: 16, textAlign: 'left' }}>
-          <button
-            className="btn btn-primary"
-            style={{ minWidth: 120, padding: '10px 20px', fontSize: 16 }}
-            disabled={!jwt || (isSymmetricAlg ? !secretKey : !publicKey) || encrypting}
-            onClick={handleEncrypt}
-          >
-            {encrypting ? 'Encrypting...' : 'Encrypt'}
-          </button>
-        </div>
       </div>
 
       <div className="content-panel" style={{ marginTop: 40 }}>
@@ -325,7 +329,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
             spellCheck={false}
             style={{ background: '#f9f9f9', minHeight: 100, width: '100%', boxSizing: 'border-box', position: 'relative', zIndex: 1 }}
           />
-          {!jwe && (
+          {!jwe && !encrypting && (
             <div style={{
               position: 'absolute',
               top: 16,
@@ -338,6 +342,21 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
               zIndex: 2,
             }}>
               Encrypted JWE will appear here
+            </div>
+          )}
+          {encrypting && (
+            <div style={{
+              position: 'absolute',
+              top: 16,
+              left: 16,
+              color: '#007bff',
+              fontFamily: 'monospace',
+              fontSize: 16,
+              pointerEvents: 'none',
+              userSelect: 'none',
+              zIndex: 2,
+            }}>
+              Encrypting...
             </div>
           )}
           <button
