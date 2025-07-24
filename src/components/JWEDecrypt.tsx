@@ -186,7 +186,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
           {/* JWE Header Section */}
           <div className="content-panel" style={{ marginBottom: 24 }}>
             <div className="input-header">
-              <label className="form-label">JWE Header</label>
+              <label className="form-label">Decoded JWT Header</label>
             </div>
             <div className="panel-content">
               <div className="json-container">
@@ -195,7 +195,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
                     <button 
                       className={`copy-icon json-copy-icon ${copiedJWEHeaderBool ? 'copied' : ''}`}
                       onClick={() => decodedJWEHeader && decodedJWEHeader.valid && copyJWEHeaderFn(JSON.stringify(decodedJWEHeader.header, null, 2))}
-                      title="Copy JWE Header"
+                      title="Copy Decoded JWT Header"
                       disabled={!decodedJWEHeader || !decodedJWEHeader.valid}
                     >
                       {copiedJWEHeaderBool ? '✓' : 'COPY'}
