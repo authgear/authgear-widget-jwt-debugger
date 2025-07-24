@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
+import { generateExampleJWE } from '../services/exampleGenerator';
+import GenerateButton from './GenerateButton';
 
 interface JWEEncryptProps {
   initialJwt?: string;
@@ -20,6 +22,30 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   const [compatError, setCompatError] = useState('');
   const [copied, copy] = useClipboard();
   const lastEncryptInputRef = useRef<string>('');
+
+  // Generate example JWE
+  const handleGenerateExample = useCallback(async (algorithm: string) => {
+    try {
+      const { jwt: exampleJwt, publicKey: examplePublicKey, privateKey: examplePrivateKey } = await generateExampleJWE();
+      setJwt(exampleJwt);
+      setPublicKey(examplePublicKey);
+      setAlg('RSA-OAEP');
+      setEnc('A256GCM');
+      setKeyFormat('pem');
+      
+      // Log private key in development for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 Generated Private Key (for debugging):');
+        console.log(examplePrivateKey);
+        console.log('📋 Generated Public Key:');
+        console.log(examplePublicKey);
+        console.log('🎫 Generated JWT:');
+        console.log(exampleJwt);
+      }
+    } catch (error) {
+      console.error('Failed to generate JWE example:', error);
+    }
+  }, []);
 
   // Determine if the selected algorithm is symmetric
   const isSymmetricAlg = alg.startsWith('A') && (alg.includes('KW') || alg.includes('GCM')) && !alg.includes('ECDH-ES+');
@@ -168,7 +194,11 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24 }}>JWE Encrypt</h2>
+      {/* JWE Example dropdown at the top, styled small and left-aligned */}
+      <div className="example-section-header" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginTop: 0, marginBottom: 16, padding: 0 }}>
+        <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWE Example:</label>
+        <GenerateButton onGenerate={handleGenerateExample} label="Generate" showAlgorithmDropdown={false} />
+      </div>
       
       <div className="main-columns" style={{ display: 'flex', alignItems: 'flex-start', width: '100%', gap: 24 }}>
         <div className="left-column" style={{ flex: 1 }}>

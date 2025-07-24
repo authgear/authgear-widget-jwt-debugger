@@ -103,4 +103,23 @@ export function getDefaultJWTExampleData(selectedAlg) {
     secret = '...'; // Placeholder, real key generated elsewhere
   }
   return { header, payload, secret };
-} 
+}
+
+// Generate example JWE with basic JWT and RSA public key
+export const generateExampleJWE = async () => {
+  return await handleAsyncOperation(async () => {
+    // Generate a basic JWT first
+    const { jwt } = await generateExampleJWT('HS256');
+    
+    // Generate RSA key pair for JWE encryption
+    const keyPair = await generateRSAKeyPair();
+    const pemKeys = await exportKeyPairToPEM(keyPair);
+    
+    return {
+      jwt,
+      publicKey: pemKeys.publicKey,
+      privateKey: pemKeys.privateKey,
+      keyPair
+    };
+  }, ERROR_TYPES.KEY_GENERATION, ERROR_MESSAGES.KEY_GENERATION_FAILED);
+}; 

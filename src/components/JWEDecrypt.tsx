@@ -129,8 +129,6 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
 
   return (
     <div style={{ width: '100%' }}>
-      <h2 style={{ fontSize: 24, fontWeight: 600, marginBottom: 24 }}>JWE Decrypt</h2>
-
       <div className="main-columns" style={{ display: 'flex', alignItems: 'flex-start', width: '100%', gap: 24 }}>
         <div className="left-column" style={{ flex: 1 }}>
           <div style={{ marginBottom: 24 }}>

@@ -4,11 +4,13 @@ import { SUPPORTED_ALGORITHMS } from '../constants';
 interface GenerateButtonProps {
   onGenerate: (algorithm: string) => void;
   label?: string;
+  showAlgorithmDropdown?: boolean;
 }
 
 const GenerateButton: React.FC<GenerateButtonProps> = ({ 
   onGenerate, 
-  label = "Generate" 
+  label = "Generate",
+  showAlgorithmDropdown = true
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -32,6 +34,15 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
     setShowDropdown(false);
   };
 
+  const handleGenerateClick = () => {
+    if (!showAlgorithmDropdown) {
+      // For JWE, just call onGenerate without algorithm parameter
+      onGenerate('');
+    } else {
+      setShowDropdown(!showDropdown);
+    }
+  };
+
   return (
     <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
       <button
@@ -49,12 +60,12 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
           height: 24,
           minWidth: '80px'
         }}
-        onClick={() => setShowDropdown(!showDropdown)}
+        onClick={handleGenerateClick}
       >
         {label}
       </button>
       
-      {showDropdown && (
+      {showDropdown && showAlgorithmDropdown && (
         <div
           style={{
             position: 'absolute',
