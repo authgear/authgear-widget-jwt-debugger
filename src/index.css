@@ -784,7 +784,7 @@ body {
   }
   
   .example-section-header label {
-    display: none;
+    font-size: 12px;
   }
   
   .main-layout {

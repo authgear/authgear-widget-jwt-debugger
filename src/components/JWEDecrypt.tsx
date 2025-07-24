@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import * as jose from 'jose';
 import { useClipboard, decodeJWT } from '../utils';
 import JSONRenderer from './JSONRenderer';
+import { generateExampleJWE } from '../services/exampleGenerator';
+import GenerateButton from './GenerateButton';
 
 interface JWEDecryptProps {
   // No props needed for this component
@@ -27,6 +29,37 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   const copiedHeaderBool = typeof copiedHeader === 'boolean' ? copiedHeader : false;
   const copiedPayloadBool = typeof copiedPayload === 'boolean' ? copiedPayload : false;
   const copiedJWEHeaderBool = typeof copiedJWEHeader === 'boolean' ? copiedJWEHeader : false;
+
+  // Generate example JWE
+  const handleGenerateExample = useCallback(async (algorithm: string) => {
+    try {
+      const { jwt: exampleJwt, publicKey: examplePublicKey, privateKey: examplePrivateKey } = await generateExampleJWE();
+      
+      // For JWE Decrypt, we need to encrypt the JWT first to create a JWE
+      const importedKey = await jose.importSPKI(examplePublicKey, 'RSA-OAEP');
+      const jweResult = await new jose.CompactEncrypt(new TextEncoder().encode(exampleJwt))
+        .setProtectedHeader({ alg: 'RSA-OAEP', enc: 'A256GCM' })
+        .encrypt(importedKey);
+      
+      setJwe(jweResult);
+      setPrivateKey(examplePrivateKey);
+      setKeyFormat('pem');
+      
+      // Log public key in development for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔐 Generated Private Key (for decryption):');
+        console.log(examplePrivateKey);
+        console.log('📋 Generated Public Key (for debugging):');
+        console.log(examplePublicKey);
+        console.log('🎫 Generated JWT (original):');
+        console.log(exampleJwt);
+        console.log('🔒 Generated JWE (encrypted):');
+        console.log(jweResult);
+      }
+    } catch (error) {
+      console.error('Failed to generate JWE example:', error);
+    }
+  }, []);
 
   // Decode the JWT when it changes
   const decodedJWT = decodeJWT(jwt);
@@ -129,6 +162,12 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
 
   return (
     <div style={{ width: '100%' }}>
+      {/* JWE Example dropdown at the top, styled small and left-aligned */}
+      <div className="example-section-header" style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginTop: 0, marginBottom: 16, padding: 0 }}>
+        <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWE Example:</label>
+        <GenerateButton onGenerate={handleGenerateExample} label="Generate" showAlgorithmDropdown={false} />
+      </div>
+      
       <div className="main-columns" style={{ display: 'flex', alignItems: 'flex-start', width: '100%', gap: 24 }}>
         <div className="left-column" style={{ flex: 1 }}>
           <div style={{ marginBottom: 24 }}>
