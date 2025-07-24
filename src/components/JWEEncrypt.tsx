@@ -344,10 +344,10 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
                       <span style={{ fontWeight: 500, marginRight: 8 }}>Encoding Format</span>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                         <input type="radio" name="secretEncoding" value="utf-8" checked={secretEncoding === 'utf-8'} onChange={() => setSecretEncoding('utf-8')} /> UTF-8
                       </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                         <input type="radio" name="secretEncoding" value="base64url" checked={secretEncoding === 'base64url'} onChange={() => setSecretEncoding('base64url')} /> Base64URL
                       </label>
                     </div>
@@ -364,10 +364,10 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
                     />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
                       <span style={{ fontWeight: 500, marginRight: 8 }}>Key Format</span>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                         <input type="radio" name="jweEncryptKeyFormat" value="pem" checked={keyFormat === 'pem'} onChange={() => setKeyFormat('pem')} /> PEM
                       </label>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
                         <input type="radio" name="jweEncryptKeyFormat" value="jwk" checked={keyFormat === 'jwk'} onChange={() => setKeyFormat('jwk')} /> JWK
                       </label>
                     </div>
