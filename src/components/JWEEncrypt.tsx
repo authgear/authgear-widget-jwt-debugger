@@ -365,7 +365,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
                   readOnly
                   rows={10}
                   spellCheck={false}
-                  style={{ background: '#f9f9f9', minHeight: 360, height: '100%', width: '100%', resize: 'vertical', overflowY: 'auto', padding: 16, border: '1.5px solid #ced4da', borderRadius: 16, fontFamily: 'monospace', fontSize: 16, boxSizing: 'border-box' }}
+                  style={{ background: '#f9f9f9', minHeight: 360, height: '100%', width: '100%', resize: 'vertical', overflowY: 'auto', padding: '16px 16px 16px 16px', paddingRight: '60px', border: '1.5px solid #ced4da', borderRadius: 16, fontFamily: 'monospace', fontSize: 16, boxSizing: 'border-box' }}
                 />
                 {!jwe && !encrypting && (
                   <div style={{
