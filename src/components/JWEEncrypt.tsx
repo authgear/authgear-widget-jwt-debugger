@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import * as jose from 'jose';
 import { useClipboard } from '../utils';
 import { generateExampleJWE } from '../services/exampleGenerator';
@@ -48,7 +48,9 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
   }, []);
 
   // Determine if the selected algorithm is symmetric
-  const isSymmetricAlg = alg.startsWith('A') && (alg.includes('KW') || alg.includes('GCM')) && !alg.includes('ECDH-ES+');
+  const isSymmetricAlg = alg.startsWith('A') && alg.includes('KW') && !alg.includes('ECDH-ES+');
+  
+
 
   // Supported algorithms and encryption methods (JWE standard only)
   const supportedAlgs = [
@@ -59,14 +61,10 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     { value: 'ECDH-ES+A192KW', label: 'ECDH-ES+A192KW - ECDH-ES with AES Key Wrap' },
     { value: 'ECDH-ES+A256KW', label: 'ECDH-ES+A256KW - ECDH-ES with AES Key Wrap' },
     { value: 'A128KW', label: 'A128KW - AES Key Wrap Algorithm using 128 bit keys' },
-    { value: 'A256KW', label: 'A256KW - AES Key Wrap Algorithm using 256 bit keys' },
-    { value: 'A128GCM', label: 'A128GCM - AES using 128 bit keys in Galois/Counter Mode' },
-    { value: 'A256GCM', label: 'A256GCM - AES using 256 bit keys in Galois/Counter Mode' }
+    { value: 'A256KW', label: 'A256KW - AES Key Wrap Algorithm using 256 bit keys' }
   ];
 
   const supportedEnc = [
-    { value: 'A128CBC', label: 'A128CBC - AES using 128 bit keys in Cipher Block Chaining mode' },
-    { value: 'A256CBC', label: 'A256CBC - AES using 256 bit keys in Cipher Block Chaining mode' },
     { value: 'A128GCM', label: 'A128GCM - AES using 128 bit keys in Galois/Counter Mode' },
     { value: 'A256GCM', label: 'A256GCM - AES using 256 bit keys in Galois/Counter Mode' }
   ];
@@ -76,6 +74,8 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
     setJwe('');
     setEncrypting(true);
     try {
+
+      
       let importedKey;
       
       if (isSymmetricAlg) {
@@ -178,7 +178,7 @@ const JWEEncrypt: React.FC<JWEEncryptProps> = ({ initialJwt = '' }) => {
         return () => clearTimeout(timeoutId);
       }
     }
-  }, [jwt, publicKey, secretKey, alg, enc, keyFormat, isSymmetricAlg, compatError, encrypting]);
+  }, [jwt, publicKey, secretKey, alg, enc, keyFormat, isSymmetricAlg, compatError, encrypting, handleEncrypt]);
 
   // Add a safety timeout to reset encrypting state if it gets stuck
   useEffect(() => {
