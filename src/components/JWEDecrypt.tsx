@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as jose from 'jose';
-import { useClipboard } from '../utils';
+import { useClipboard, decodeJWT } from '../utils';
+import JSONRenderer from './JSONRenderer';
 
 interface JWEDecryptProps {
   // No props needed for this component
@@ -14,6 +15,17 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   const [decrypting, setDecrypting] = useState(false);
   const [error, setError] = useState('');
   const [copied, copy] = useClipboard();
+  const [copiedHeader, copyHeader] = useClipboard();
+  const [copiedPayload, copyPayload] = useClipboard();
+
+  // Extract functions from useClipboard tuples
+  const copyHeaderFn = typeof copyHeader === 'function' ? copyHeader : () => Promise.resolve(false);
+  const copyPayloadFn = typeof copyPayload === 'function' ? copyPayload : () => Promise.resolve(false);
+  const copiedHeaderBool = typeof copiedHeader === 'boolean' ? copiedHeader : false;
+  const copiedPayloadBool = typeof copiedPayload === 'boolean' ? copiedPayload : false;
+
+  // Decode the JWT when it changes
+  const decodedJWT = decodeJWT(jwt);
 
   const handleDecrypt = async () => {
     setError('');
@@ -33,6 +45,11 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
     } finally {
       setDecrypting(false);
     }
+  };
+
+  // Type guards for decoded JWT
+  const isValidJWT = (obj: any): obj is { header: any; payload: any; error?: string } => {
+    return obj && typeof obj === 'object' && 'header' in obj && 'payload' in obj;
   };
 
   return (
@@ -133,6 +150,65 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
           </button>
         </div>
       </div>
+
+      {/* Decoded JWT Sections */}
+      {jwt && (
+        <>
+          <div className="content-panel">
+            <div className="input-header">
+              <label className="form-label">Decoded Header</label>
+            </div>
+            <div className="panel-content">
+              <div className="json-container">
+                {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
+                  <>
+                    <button 
+                      className={`copy-icon json-copy-icon ${copiedHeaderBool ? 'copied' : ''}`}
+                      onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyHeaderFn(JSON.stringify(decodedJWT.header, null, 2))}
+                      title="Copy Decoded Header"
+                      disabled={!decodedJWT || !isValidJWT(decodedJWT) || !!decodedJWT.error}
+                    >
+                      {copiedHeaderBool ? '✓' : 'COPY'}
+                    </button>
+                    <JSONRenderer obj={decodedJWT.header} type="header" />
+                  </>
+                ) : (
+                  <div className="json-display json-header" style={{ color: '#6c757d', fontStyle: 'italic' }}>
+                    {decodedJWT && isValidJWT(decodedJWT) && decodedJWT.error ? 'Invalid JWT' : 'Decoded header will appear here'}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="content-panel">
+            <div className="input-header">
+              <label className="form-label">Decoded Payload</label>
+            </div>
+            <div className="panel-content">
+              <div className="json-container">
+                {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
+                  <>
+                    <button 
+                      className={`copy-icon json-copy-icon ${copiedPayloadBool ? 'copied' : ''}`}
+                      onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyPayloadFn(JSON.stringify(decodedJWT.payload, null, 2))}
+                      title="Copy Decoded Payload"
+                      disabled={!decodedJWT || !isValidJWT(decodedJWT) || !!decodedJWT.error}
+                    >
+                      {copiedPayloadBool ? '✓' : 'COPY'}
+                    </button>
+                    <JSONRenderer obj={decodedJWT.payload} type="payload" />
+                  </>
+                ) : (
+                  <div className="json-display json-payload" style={{ color: '#6c757d', fontStyle: 'italic' }}>
+                    {decodedJWT && isValidJWT(decodedJWT) && decodedJWT.error ? 'Invalid JWT' : 'Decoded payload will appear here'}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
