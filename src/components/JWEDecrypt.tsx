@@ -160,10 +160,10 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
                 <textarea
                   value={privateKey}
                   onChange={e => setPrivateKey(e.target.value)}
-                  rows={4}
+                  rows={8}
                   spellCheck={false}
                   placeholder={keyFormat === 'pem' ? 'Enter private key in PEM format' : 'Enter private key in JWK format'}
-                  style={{ width: '100%', minHeight: 80, padding: 16, border: '1.5px solid #ced4da', borderRadius: 16, fontFamily: 'monospace', fontSize: 16, resize: 'none', marginBottom: 0 }}
+                  style={{ width: '100%', minHeight: 200, padding: 16, border: '1.5px solid #ced4da', borderRadius: 16, fontFamily: 'monospace', fontSize: 16, resize: 'vertical', marginBottom: 0 }}
                 />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 12 }}>
                   <span style={{ fontWeight: 500, marginRight: 8 }}>Key Format</span>
@@ -186,7 +186,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
           {/* JWE Header Section */}
           <div className="content-panel" style={{ marginBottom: 24 }}>
             <div className="input-header">
-              <label className="form-label">Decoded JWT Header</label>
+              <label className="form-label">Decoded JWE Header</label>
             </div>
             <div className="panel-content">
               <div className="json-container">
@@ -195,7 +195,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
                     <button 
                       className={`copy-icon json-copy-icon ${copiedJWEHeaderBool ? 'copied' : ''}`}
                       onClick={() => decodedJWEHeader && decodedJWEHeader.valid && copyJWEHeaderFn(JSON.stringify(decodedJWEHeader.header, null, 2))}
-                      title="Copy Decoded JWT Header"
+                      title="Copy JWE Header"
                       disabled={!decodedJWEHeader || !decodedJWEHeader.valid}
                     >
                       {copiedJWEHeaderBool ? '✓' : 'COPY'}
@@ -204,7 +204,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
                   </>
                 ) : (
                   <div className="json-display json-header" style={{ color: '#6c757d', fontStyle: 'italic' }}>
-                    {decodedJWEHeader && decodedJWEHeader.error ? decodedJWEHeader.error : 'JWE header will appear here'}
+                    {decodedJWEHeader && decodedJWEHeader.error ? decodedJWEHeader.error : 'Decoded JWE header will appear here'}
                   </div>
                 )}
               </div>
