@@ -103,7 +103,7 @@ const JWTTokenInput: React.FC<JWTTokenInputProps> = ({ jwtToken, setJwtToken, de
                   bottom: 0,
                   overflow: 'hidden',
                   padding: '12px 16px',
-                  paddingRight: 40,
+                  paddingRight: '48px',
                   fontSize: 14,
                   fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace',
                   whiteSpace: 'pre-wrap',
@@ -143,6 +143,7 @@ const JWTTokenInput: React.FC<JWTTokenInputProps> = ({ jwtToken, setJwtToken, de
                 maxHeight: 240,
                 boxSizing: 'border-box',
                 zIndex: 2,
+                paddingRight: '48px',
               }}
               onScroll={handleScroll}
             />
