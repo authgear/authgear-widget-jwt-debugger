@@ -5,8 +5,16 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'build',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   server: {
     open: true,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom'],
   },
 }); 
