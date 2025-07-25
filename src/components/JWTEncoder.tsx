@@ -9,7 +9,6 @@ import { ERROR_MESSAGES } from '../utils/errorHandling';
 import TimeConversionModal from './TimeConversionModal';
 
 interface JWTEncoderProps {
-  onEncryptToken: (jwt: string) => void;
 }
 
 const defaultHeader = `{
@@ -26,7 +25,6 @@ const highlightWithPrism = (code: string) =>
   Prism.highlight(code, Prism.languages.json, 'json');
 
 const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string, secret: string) => void }, JWTEncoderProps>((props, ref) => {
-  const { onEncryptToken } = props;
   const [header, setHeader] = useState(defaultHeader);
   const [payload, setPayload] = useState(defaultPayload);
   const [secretOrKey, setSecretOrKey] = useState('');
@@ -473,17 +471,7 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
                   Generated JWT will appear here
                 </div>
               )}
-              {jwt && (
-                <div style={{ marginTop: 12, display: 'flex', justifyContent: 'flex-end' }}>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => onEncryptToken && onEncryptToken(jwt)}
-                    style={{ padding: '4px 12px', fontSize: 12, border: '1px solid #ced4da', background: '#fff', color: '#333' }}
-                  >
-                    Encrypt this token
-                  </button>
-                </div>
-              )}
+
             </div>
           </div>
         </div>
