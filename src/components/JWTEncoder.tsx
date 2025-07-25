@@ -126,11 +126,11 @@ const JWTEncoder = forwardRef<{ setExampleData: (header: string, payload: string
       setHeader(header);
       setPayload(payload);
       setSecretOrKey(secret);
-      // If alg is RS* or ES*, set privateKeyFormat to 'pem'
+      // If alg is RS* or ES*, set privateKeyFormat to 'jwk'
       try {
         const alg = JSON.parse(header).alg;
         if (alg && (alg.startsWith('RS') || alg.startsWith('ES'))) {
-          setPrivateKeyFormat('pem');
+          setPrivateKeyFormat('jwk');
         }
       } catch {}
     }

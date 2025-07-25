@@ -59,6 +59,17 @@ export async function exportKeyPairToPEM(keyPair) {
   };
 }
 
+// Export key pair to JWK format
+export async function exportKeyPairToJWK(keyPair) {
+  const privateKeyJWK = await window.crypto.subtle.exportKey('jwk', keyPair.privateKey);
+  const publicKeyJWK = await window.crypto.subtle.exportKey('jwk', keyPair.publicKey);
+  
+  return {
+    privateKey: JSON.stringify(privateKeyJWK, null, 2),
+    publicKey: JSON.stringify(publicKeyJWK, null, 2)
+  };
+}
+
 // Generate RSA key pair and export to PEM
 export async function generateAndExportRSAKeyPair() {
   const keyPair = await generateRSAKeyPair();

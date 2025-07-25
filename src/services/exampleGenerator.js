@@ -1,5 +1,5 @@
 import * as jose from 'jose';
-import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './keyUtils';
+import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM, exportKeyPairToJWK } from './keyUtils';
 import { createError, ERROR_TYPES, ERROR_MESSAGES, handleAsyncOperation } from '../utils/errorHandling';
 
 // Generate example JWT
@@ -48,31 +48,31 @@ export const generateExampleJWT = async (selectedAlg, keyPairArg) => {
       if (!keyPair) {
         keyPair = await generateRSAKeyPair();
       }
-      const pemKeys = await exportKeyPairToPEM(keyPair);
-      const privateKey = await jose.importPKCS8(pemKeys.privateKey, selectedAlg);
+      const jwkKeys = await exportKeyPairToJWK(keyPair);
+      const privateKey = await jose.importJWK(JSON.parse(jwkKeys.privateKey), selectedAlg);
       jwt = await new jose.SignJWT(payload)
         .setProtectedHeader(header)
         .setIssuedAt()
         .setExpirationTime('1h')
         .sign(privateKey);
-      // Export keys as PEM
-      generatedPrivateKey = pemKeys.privateKey;
-      generatedPublicKey = pemKeys.publicKey;
+      // Export keys as JWK
+      generatedPrivateKey = jwkKeys.privateKey;
+      generatedPublicKey = jwkKeys.publicKey;
     } else if (selectedAlg.startsWith('ES')) {
       // Use provided keyPair or generate a new one
       if (!keyPair) {
         keyPair = await generateECKeyPair(selectedAlg);
       }
-      const pemKeys = await exportKeyPairToPEM(keyPair);
-      const privateKey = await jose.importPKCS8(pemKeys.privateKey, selectedAlg);
+      const jwkKeys = await exportKeyPairToJWK(keyPair);
+      const privateKey = await jose.importJWK(JSON.parse(jwkKeys.privateKey), selectedAlg);
       jwt = await new jose.SignJWT(payload)
         .setProtectedHeader(header)
         .setIssuedAt()
         .setExpirationTime('1h')
         .sign(privateKey);
-      // Export keys as PEM
-      generatedPrivateKey = pemKeys.privateKey;
-      generatedPublicKey = pemKeys.publicKey;
+      // Export keys as JWK
+      generatedPrivateKey = jwkKeys.privateKey;
+      generatedPublicKey = jwkKeys.publicKey;
     }
 
     return { jwt, generatedSecret, generatedPrivateKey, generatedPublicKey, keyPair };

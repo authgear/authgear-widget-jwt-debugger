@@ -4,7 +4,7 @@ import { decodeJWT, useClipboard } from './utils';
 import { verifyJWTSignature } from './services/jwtVerification';
 import { generateExampleJWT } from './services/exampleGenerator';
 import { getDefaultJWTExampleData } from './services/exampleGenerator';
-import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM } from './services/keyUtils';
+import { generateRSAKeyPair, generateECKeyPair, arrayBufferToPem, exportKeyPairToPEM, exportKeyPairToJWK } from './services/keyUtils';
 import { SUPPORTED_ALGORITHMS } from './constants';
 import TabNavigation from './components/TabNavigation';
 import JWTTokenInput from './components/JWTTokenInput';
@@ -17,7 +17,7 @@ import GenerateButton from './components/GenerateButton';
 import { useSignatureVerification } from './hooks/useSignatureVerification';
 
 // Custom hook for example generation
-function useExampleGenerator(activeTab: string, encoderRef: React.RefObject<any>, setJwtToken: React.Dispatch<React.SetStateAction<string>>, setSecret: React.Dispatch<React.SetStateAction<string>>, setPublicKey: React.Dispatch<React.SetStateAction<string>>) {
+function useExampleGenerator(activeTab: string, encoderRef: React.RefObject<any>, setJwtToken: React.Dispatch<React.SetStateAction<string>>, setSecret: React.Dispatch<React.SetStateAction<string>>, setPublicKey: React.Dispatch<React.SetStateAction<string>>, setJwkEndpoint?: React.Dispatch<React.SetStateAction<string>>, setKeyType?: React.Dispatch<React.SetStateAction<string>>) {
   return React.useCallback(async (algorithm: string) => {
     if (activeTab === 'decoder') {
       if (algorithm.startsWith('RS') || algorithm.startsWith('ES')) {
@@ -31,7 +31,13 @@ function useExampleGenerator(activeTab: string, encoderRef: React.RefObject<any>
         const { jwt: realJwt, generatedPublicKey } = await generateExampleJWT(algorithm, keyPair);
         setJwtToken(realJwt);
         setSecret('');
-        setPublicKey(generatedPublicKey);
+        setPublicKey('');
+        if (setJwkEndpoint) {
+          setJwkEndpoint(generatedPublicKey);
+        }
+        if (setKeyType) {
+          setKeyType('jwk');
+        }
       } else {
         const { jwt, generatedSecret } = await generateExampleJWT(algorithm);
         setJwtToken(jwt);
@@ -46,15 +52,15 @@ function useExampleGenerator(activeTab: string, encoderRef: React.RefObject<any>
       const { header, payload, secret } = getDefaultJWTExampleData(algorithm);
       let realSecret = secret;
       if (algorithm.startsWith('RS')) {
-        // Generate a real RSA private key as PEM
+        // Generate a real RSA private key as JWK
         const keyPair = await generateRSAKeyPair();
-        const pemKeys = await exportKeyPairToPEM(keyPair);
-        realSecret = pemKeys.privateKey;
+        const jwkKeys = await exportKeyPairToJWK(keyPair);
+        realSecret = jwkKeys.privateKey;
       } else if (algorithm.startsWith('ES')) {
-        // Generate a real EC private key as PEM
+        // Generate a real EC private key as JWK
         const keyPair = await generateECKeyPair(algorithm);
-        const pemKeys = await exportKeyPairToPEM(keyPair);
-        realSecret = pemKeys.privateKey;
+        const jwkKeys = await exportKeyPairToJWK(keyPair);
+        realSecret = jwkKeys.privateKey;
       }
       encoderRef.current.setExampleData(
         JSON.stringify(header, null, 2),
@@ -104,7 +110,7 @@ function JWTDebugger() {
   const { algorithm, secretConfig, publicKeyConfig, signatureResult } = useSignatureVerification(decodedJWT, jwtToken);
 
   // Generate example JWT
-  const generateExample = useExampleGenerator(activeTab, encoderRef, setJwtToken, secretConfig.setValue, publicKeyConfig.setValue);
+  const generateExample = useExampleGenerator(activeTab, encoderRef, setJwtToken, secretConfig.setValue, publicKeyConfig.setValue, publicKeyConfig.setJwkValue, publicKeyConfig.setType);
 
   // Function to handle switching to JWE Encrypt tab with JWT
   const switchToJweEncrypt = (jwt: string) => {
@@ -164,7 +170,7 @@ function JWTDebugger() {
             <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWT Example:</label>
             <GenerateButton onGenerate={generateExample} />
           </div>
-          <JWTEncoder ref={encoderRef} onEncryptToken={switchToJweEncrypt} />
+          <JWTEncoder ref={encoderRef} />
         </div>
         <div style={{ display: activeTab === 'jwe-encrypt' ? 'block' : 'none' }}>
           <JWEEncrypt initialJwt={jweEncryptJwt} />
