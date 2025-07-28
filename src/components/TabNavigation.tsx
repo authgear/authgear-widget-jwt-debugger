@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SUPPORTED_ALGORITHMS } from '../constants';
 
 interface TabNavigationProps {
@@ -14,6 +14,22 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   selectedAlg,
   setSelectedAlg
 }) => {
+  const [isInIframe, setIsInIframe] = useState(false);
+
+  useEffect(() => {
+    // Check if the page is running in an iframe
+    const checkIfInIframe = () => {
+      try {
+        return window.self !== window.top;
+      } catch (e) {
+        // If we can't access window.top due to cross-origin restrictions,
+        // it means we're in an iframe
+        return true;
+      }
+    };
+    
+    setIsInIframe(checkIfInIframe());
+  }, []);
   return (
     <div className="header-section">
       <div className="tabs">
@@ -42,14 +58,16 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
           JWE Decrypt
         </button>
       </div>
-      <div className="authgear-logo-section">
-        <span className="powered-by-text">Presented by</span>
-        <img 
-          src="./authgear-logo.svg" 
-          alt="Authgear Logo" 
-          className="authgear-logo"
-        />
-      </div>
+      {!isInIframe && (
+        <div className="authgear-logo-section">
+          <span className="powered-by-text">Presented by</span>
+          <img 
+            src="./authgear-logo.svg" 
+            alt="Authgear Logo" 
+            className="authgear-logo"
+          />
+        </div>
+      )}
     </div>
   );
 };
