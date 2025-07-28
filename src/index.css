@@ -31,6 +31,11 @@ body {
   flex-wrap: nowrap;
   min-height: 60px;
   overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
 }
 
 .authgear-logo-section {
@@ -113,6 +118,9 @@ body {
 
 .tab-content {
   padding: 24px;
+  padding-top: 84px;
+  overflow-y: auto;
+  height: 100vh;
 }
 
 .form-group {
@@ -166,7 +174,7 @@ body {
   padding: 4px 6px;
   border-radius: 4px;
   transition: all 0.2s;
-  z-index: 10;
+  z-index: 5;
   backdrop-filter: blur(2px);
 }
 
@@ -578,7 +586,7 @@ body {
   right: 8px;
   background: rgba(255, 255, 255, 0.9);
   border: 1px solid #ced4da;
-  z-index: 10;
+  z-index: 5;
 }
 
 .json-content {
@@ -774,6 +782,11 @@ body {
     align-items: center;
     padding: 0 16px;
     flex-wrap: nowrap;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
   }
   
   .authgear-logo-section {
@@ -825,5 +838,9 @@ body {
   }
   .main-columns .left-column {
     order: 1 !important;
+  }
+  
+  .tab-content {
+    padding-top: 76px;
   }
 } 
