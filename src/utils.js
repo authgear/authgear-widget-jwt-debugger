@@ -47,14 +47,42 @@ export function useClipboard(timeout = 2000) {
 
   const copy = useCallback(async (text) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), timeout);
-      return true;
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), timeout);
+        return true;
+      }
     } catch (error) {
-      setCopied(false);
-      return false;
+      // Modern API failed, try fallback method
     }
+
+    // Fallback method for iframes and older browsers
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), timeout);
+        return true;
+      }
+    } catch (error) {
+      console.warn('Copy failed:', error);
+    }
+
+    setCopied(false);
+    return false;
   }, [timeout]);
 
   return [copied, copy];
