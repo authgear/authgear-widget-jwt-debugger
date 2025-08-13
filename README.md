@@ -1,8 +1,12 @@
-# Authgear JWT Debugger Widget
+# Authgear JWT & JWE Debugger
 
 A comprehensive React-based JWT debugging tool designed to be embedded in authgear.com via iframe. This widget provides full JWT decoding, validation, signature verification, and JWE encryption/decryption capabilities with support for all major JWT algorithms including Elliptic Curve (ES) algorithms.
 
 > **Built using [Cursor AI](https://cursor.sh/)**
+
+## 🌐 Live Demo
+
+**[Try the tool online at https://www.authgear.com/tools/jwt-jwe-debugger](https://www.authgear.com/tools/jwt-jwe-debugger)**
 
 ## Features
 
