@@ -30,6 +30,11 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
     
     setIsInIframe(checkIfInIframe());
   }, []);
+
+  const handleExternalLink = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="header-section">
       <div className="tabs">
@@ -56,6 +61,13 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
           onClick={() => setActiveTab('jwe-decrypt')}
         >
           JWE Decrypt
+        </button>
+        <button
+          className="tab external-link-tab"
+          onClick={() => handleExternalLink('https://www.authgear.com/tools/jwk-generator')}
+          title="Open JWK Generator in new tab"
+        >
+          JWK Generator ↗
         </button>
       </div>
       {!isInIframe && (

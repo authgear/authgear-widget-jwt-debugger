@@ -116,6 +116,18 @@ body {
   background-color: white;
 }
 
+.external-link-tab {
+  color: #6c757d;
+  margin-left: 8px;
+  flex: 0 0 auto;
+  min-width: 140px;
+}
+
+.external-link-tab:hover {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
 .tab-content {
   padding: 24px;
   padding-top: 84px;
@@ -852,7 +864,14 @@ body {
     background-color: transparent;
   }
   
+  .external-link-tab {
+    font-size: 11px;
+    padding: 8px 4px;
+    min-width: 100px;
+    margin-left: 4px;
+  }
+  
   .tab-content {
     padding-top: 60px;
   }
-} 
+}
