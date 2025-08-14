@@ -32,7 +32,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
   }, []);
 
   const handleExternalLink = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, '_blank', 'noopener');
   };
 
   return (
@@ -64,7 +64,7 @@ const TabNavigation: React.FC<TabNavigationProps> = ({
         </button>
         <button
           className="tab external-link-tab"
-          onClick={() => handleExternalLink('https://www.authgear.com/tools/jwk-generator')}
+          onClick={() => handleExternalLink('https://www.authgear.com/tools/jwk-generator?utm_source=authgear&utm_medium=link&utm_campaign=jwt-debugger')}
           title="Open JWK Generator in new tab"
         >
           JWK Generator ↗
