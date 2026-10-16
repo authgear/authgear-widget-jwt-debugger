@@ -34,17 +34,17 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   const handleGenerateExample = useCallback(async (algorithm: string) => {
     try {
       const { jwt: exampleJwt, publicKey: examplePublicKey, privateKey: examplePrivateKey } = await generateExampleJWE();
-      
+
       // For JWE Decrypt, we need to encrypt the JWT first to create a JWE
       const importedKey = await jose.importSPKI(examplePublicKey, 'RSA-OAEP');
       const jweResult = await new jose.CompactEncrypt(new TextEncoder().encode(exampleJwt))
         .setProtectedHeader({ alg: 'RSA-OAEP', enc: 'A256GCM' })
         .encrypt(importedKey);
-      
+
       setJwe(jweResult);
       setPrivateKey(examplePrivateKey);
       setKeyFormat('pem');
-      
+
       // Log public key in development for debugging
       if (process.env.NODE_ENV === 'development') {
         console.log('🔐 Generated Private Key (for decryption):');
@@ -67,17 +67,17 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   // Decode JWE header (doesn't require private key)
   const decodedJWEHeader = useMemo(() => {
     if (!jwe) return null;
-    
+
     try {
       const parts = jwe.split('.');
       if (parts.length !== 5) {
         return { error: 'Invalid JWE format' };
       }
-      
+
       // The first part is the JWE header (base64url encoded)
       const headerPart = parts[0];
       const decodedHeader = JSON.parse(atob(headerPart.replace(/-/g, '+').replace(/_/g, '/')));
-      
+
       return {
         header: decodedHeader,
         valid: true
@@ -92,11 +92,13 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
     setJwt('');
     setDecrypting(true);
     try {
+      // use algorithm as specified in (valid) JWE header, otherwise assume RSA-OAEP
+      const alg = decodedJWEHeader?.valid ? decodedJWEHeader.header.alg : 'RSA-OAEP';
       let importedKey;
       if (keyFormat === 'pem') {
-        importedKey = await jose.importPKCS8(privateKey, 'RSA-OAEP');
+        importedKey = await jose.importPKCS8(privateKey, alg);
       } else {
-        importedKey = await jose.importJWK(JSON.parse(privateKey), 'RSA-OAEP');
+        importedKey = await jose.importJWK(JSON.parse(privateKey), alg);
       }
       const { plaintext } = await jose.compactDecrypt(jwe, importedKey);
       setJwt(new TextDecoder().decode(plaintext));
@@ -105,7 +107,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
     } finally {
       setDecrypting(false);
     }
-  }, [jwe, privateKey, keyFormat]);
+  }, [jwe, privateKey, keyFormat, decodedJWEHeader]);
 
   // Auto-decrypt when both JWE and private key are available
   useEffect(() => {
@@ -128,16 +130,16 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
     if (shouldDecrypt && !decrypting) {
       // Create a unique key for the current input state
       const currentInputKey = `${jwe}-${privateKey}-${keyFormat}`;
-      
+
       // Only decrypt if we haven't already decrypted for this exact input state
       if (lastDecryptInputRef.current !== currentInputKey) {
         lastDecryptInputRef.current = currentInputKey;
-        
+
         // Add a small delay to prevent rapid successive calls
         const timeoutId = setTimeout(() => {
           handleDecrypt();
         }, 100);
-        
+
         return () => clearTimeout(timeoutId);
       }
     }
@@ -167,7 +169,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
         <label style={{ fontSize: '12px', color: '#333', marginRight: 6 }}>JWE Example:</label>
         <GenerateButton onGenerate={handleGenerateExample} label="Generate" showAlgorithmDropdown={false} />
       </div>
-      
+
       <div className="main-columns" style={{ display: 'flex', alignItems: 'flex-start', width: '100%', gap: 24 }}>
         <div className="left-column" style={{ flex: 1 }}>
           <div style={{ marginBottom: 24 }}>
@@ -218,7 +220,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
 
 
         </div>
-        
+
         <div className="right-column" style={{ flex: 1 }}>
           {/* JWE Header Section */}
           <div className="content-panel" style={{ marginBottom: 24 }}>
@@ -229,7 +231,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
               <div className="json-container">
                 {decodedJWEHeader && decodedJWEHeader.valid ? (
                   <>
-                    <button 
+                    <button
                       className={`copy-icon json-copy-icon ${copiedJWEHeaderBool ? 'copied' : ''}`}
                       onClick={() => decodedJWEHeader && decodedJWEHeader.valid && copyJWEHeaderFn(JSON.stringify(decodedJWEHeader.header, null, 2))}
                       title="Copy JWE Header"
@@ -257,7 +259,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
               <div className="json-container">
                 {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
                   <>
-                    <button 
+                    <button
                       className={`copy-icon json-copy-icon ${copiedHeaderBool ? 'copied' : ''}`}
                       onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyHeaderFn(JSON.stringify(decodedJWT.header, null, 2))}
                       title="Copy Decoded JWT Header"
@@ -284,7 +286,7 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
               <div className="json-container">
                 {decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error ? (
                   <>
-                    <button 
+                    <button
                       className={`copy-icon json-copy-icon ${copiedPayloadBool ? 'copied' : ''}`}
                       onClick={() => decodedJWT && isValidJWT(decodedJWT) && !decodedJWT.error && copyPayloadFn(JSON.stringify(decodedJWT.payload, null, 2))}
                       title="Copy Decoded Payload"
@@ -365,4 +367,4 @@ const JWEDecrypt: React.FC<JWEDecryptProps> = () => {
   );
 };
 
-export default JWEDecrypt; 
+export default JWEDecrypt;
